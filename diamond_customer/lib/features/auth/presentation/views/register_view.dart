@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_toast.dart';
@@ -188,98 +189,92 @@ class _RegisterFormState extends State<_RegisterForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
-        body: SafeArea(
-          child: BlocListener<RegisterCubit, RegisterState>(
-            listener: _handleRegisterState,
-            child: Center(
-              child: SingleChildScrollView(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const AuthHeader(
-                      title: 'إنشاء حساب جديد',
-                      subtitle:
-                          'انضم إلى Diamond Village وسهّل حياتك اليومية',
-                    )
-                        .animate()
-                        .fadeIn(duration: 400.ms)
-                        .slideY(
-                          begin: -0.15,
-                          end: 0,
-                          curve: Curves.easeOutCubic,
-                        ),
-
-                    Gap(28.h),
-
-                    RegisterFormCard(
-                      firstNameController: _firstNameController,
-                      lastNameController: _lastNameController,
-                      emailController: _emailController,
-                      phoneController: _phoneController,
-                      passwordController: _passwordController,
-                      dobController: _dobController,
-                      obscurePassword: _obscure,
-                      onToggleObscure: () =>
-                          setState(() => _obscure = !_obscure),
-                      onPickDateOfBirth: _pickDateOfBirth,
-                      firstNameError: _firstNameError,
-                      lastNameError: _lastNameError,
-                      emailError: _emailError,
-                      phoneError: _phoneError,
-                      passwordError: _passwordError,
-                      onFirstNameChanged: (_) =>
-                          setState(() => _serverFirstNameError = null),
-                      onLastNameChanged: (_) =>
-                          setState(() => _serverLastNameError = null),
-                      onEmailChanged: (_) =>
-                          setState(() => _serverEmailError = null),
-                      onPhoneChanged: (_) =>
-                          setState(() => _serverPhoneError = null),
-                      onPasswordChanged: (_) =>
-                          setState(() => _serverPasswordError = null),
-                      submitButton: BlocBuilder<RegisterCubit, RegisterState>(
-                        builder: (context, state) {
-                          final isLoading = state is RegisterLoading;
-                          return AppButton(
-                            label:
-                                isLoading ? 'جاري التسجيل...' : 'تأكيد البيانات',
-                            onPressed: isLoading ? null : _submit,
-                          );
-                        },
+    return Scaffold(
+      backgroundColor: context.scaffoldBackgroundColor,
+      body: SafeArea(
+        child: BlocListener<RegisterCubit, RegisterState>(
+          listener: _handleRegisterState,
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AuthHeader(
+                    title: context.tr('register'),
+                    subtitle: context.tr('registerSubtitle'),
+                  )
+                      .animate()
+                      .fadeIn(duration: 400.ms)
+                      .slideY(
+                        begin: -0.15,
+                        end: 0,
+                        curve: Curves.easeOutCubic,
                       ),
-                    )
-                        .animate()
-                        .fadeIn(delay: 200.ms, duration: 400.ms)
-                        .slideY(
-                          begin: 0.1,
-                          end: 0,
-                          curve: Curves.easeOutCubic,
-                        ),
 
-                    Gap(20.h),
+                  Gap(28.h),
 
-                    const RegisterTermsText()
-                        .animate()
-                        .fadeIn(delay: 300.ms),
-
-                    Gap(20.h),
-
-                    const DividerWithLabel(label: 'أو تابع باستخدام'),
-
-                    Gap(16.h),
-
-                    SocialAuthButtonsRow(
-                      onGooglePressed: () => context.go(AppRoutes.home),
-                      onFacebookPressed: () => context.go(AppRoutes.home),
+                  RegisterFormCard(
+                    firstNameController: _firstNameController,
+                    lastNameController: _lastNameController,
+                    emailController: _emailController,
+                    phoneController: _phoneController,
+                    passwordController: _passwordController,
+                    dobController: _dobController,
+                    obscurePassword: _obscure,
+                    onToggleObscure: () =>
+                        setState(() => _obscure = !_obscure),
+                    onPickDateOfBirth: _pickDateOfBirth,
+                    firstNameError: _firstNameError,
+                    lastNameError: _lastNameError,
+                    emailError: _emailError,
+                    phoneError: _phoneError,
+                    passwordError: _passwordError,
+                    onFirstNameChanged: (_) =>
+                        setState(() => _serverFirstNameError = null),
+                    onLastNameChanged: (_) =>
+                        setState(() => _serverLastNameError = null),
+                    onEmailChanged: (_) =>
+                        setState(() => _serverEmailError = null),
+                    onPhoneChanged: (_) =>
+                        setState(() => _serverPhoneError = null),
+                    onPasswordChanged: (_) =>
+                        setState(() => _serverPasswordError = null),
+                    submitButton: BlocBuilder<RegisterCubit, RegisterState>(
+                      builder: (context, state) {
+                        final isLoading = state is RegisterLoading;
+                        return AppButton(
+                          label: isLoading
+                              ? context.tr('loading')
+                              : context.tr('confirm'),
+                          onPressed: isLoading ? null : _submit,
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  )
+                      .animate()
+                      .fadeIn(delay: 200.ms, duration: 400.ms)
+                      .slideY(
+                        begin: 0.1,
+                        end: 0,
+                        curve: Curves.easeOutCubic,
+                      ),
+
+                  Gap(20.h),
+
+                  const RegisterTermsText().animate().fadeIn(delay: 300.ms),
+
+                  Gap(20.h),
+
+                  const DividerWithLabel(label: 'أو تابع باستخدام'),
+
+                  Gap(16.h),
+
+                  SocialAuthButtonsRow(
+                    onGooglePressed: () => context.go(AppRoutes.home),
+                    onFacebookPressed: () => context.go(AppRoutes.home),
+                  ),
+                ],
               ),
             ),
           ),

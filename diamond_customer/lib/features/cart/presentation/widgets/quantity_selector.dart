@@ -4,7 +4,6 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/constants/app_radius.dart';
 
-/// +/- quantity stepper used on Cart items and Product Details.
 class QuantitySelector extends StatelessWidget {
   const QuantitySelector({
     super.key,
@@ -21,24 +20,30 @@ class QuantitySelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.greyLight,
+        color: context.greyLightColor,
         borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _stepButton(icon: Icons.remove_rounded, onTap: onDecrement),
+          _stepButton(context: context, icon: Icons.remove_rounded, onTap: onDecrement),
           SizedBox(
             width: 28.w,
-            child: Text('$quantity', textAlign: TextAlign.center, style: AppTextStyles.bodyLarge),
+            child: Text(
+              '$quantity',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: context.textPrimaryColor,
+              ),
+            ),
           ),
-          _stepButton(icon: Icons.add_rounded, onTap: onIncrement, filled: true),
+          _stepButton(context: context, icon: Icons.add_rounded, onTap: onIncrement, filled: true),
         ],
       ),
     );
   }
 
-  Widget _stepButton({required IconData icon, required VoidCallback onTap, bool filled = false}) {
+  Widget _stepButton({required BuildContext context, required IconData icon, required VoidCallback onTap, bool filled = false}) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -46,10 +51,10 @@ class QuantitySelector extends StatelessWidget {
         width: 30.w,
         height: 30.w,
         decoration: BoxDecoration(
-          color: filled ? AppColors.primary : Colors.transparent,
+          color: filled ? context.primaryThemeColor : Colors.transparent,
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, size: 16.sp, color: filled ? AppColors.white : AppColors.textSecondary),
+        child: Icon(icon, size: 16.sp, color: filled ? AppColors.white : context.textSecondaryColor),
       ),
     );
   }

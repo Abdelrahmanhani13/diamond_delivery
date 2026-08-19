@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
@@ -16,7 +17,6 @@ import '../../../../core/widgets/loading_widget.dart';
 
 import '../widgets/address_card.dart';
 
-/// شاشة "عناويني" — بتتفتح من البروفايل أو من الـ Checkout.
 class AddressListView extends StatelessWidget {
   const AddressListView({super.key});
 
@@ -35,22 +35,19 @@ class _AddressListBody extends StatelessWidget {
   Future<void> _confirmDelete(BuildContext context, Address address) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          title: const Text('حذف العنوان'),
-          content: Text('هل أنت متأكد من حذف "${address.label}"؟'),
-          actions: [
-            TextButton(
-              onPressed: () => dialogContext.pop(false),
-              child: const Text('إلغاء'),
-            ),
-            TextButton(
-              onPressed: () => dialogContext.pop(true),
-              child: const Text('حذف', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        ),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.tr('deleteAddress')),
+        content: Text('${context.tr('deleteAddressConfirm')} ("${address.label}")'),
+        actions: [
+          TextButton(
+            onPressed: () => dialogContext.pop(false),
+            child: Text(context.tr('cancel')),
+          ),
+          TextButton(
+            onPressed: () => dialogContext.pop(true),
+            child: Text(context.tr('delete'), style: const TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
     if (confirmed == true && context.mounted) {
@@ -77,80 +74,77 @@ class _AddressListBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
-        appBar: const CustomAppBar(title: 'عناويني'),
-        body: BlocConsumer<AddressListCubit, AddressListState>(
-          listener: (context, state) {
-            if (state is AddressListActionError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            if (state is AddressListLoading || state is AddressListInitial) {
-              return const LoadingWidget();
-            }
-            if (state is AddressListError) {
-              return EmptyStateWidget(
-                title: state.message,
-                icon: Icons.error_outline_rounded,
-              );
-            }
-
-            final addresses = switch (state) {
-              AddressListLoaded(:final addresses) => addresses,
-              AddressListActionError(:final addresses) => addresses,
-              _ => const <Address>[],
-            };
-            final processingId = state is AddressListLoaded
-                ? state.processingAddressId
-                : null;
-
-            if (addresses.isEmpty) {
-              return const EmptyStateWidget(
-                title: 'لا توجد عناوين محفوظة',
-                icon: Icons.location_off_outlined,
-              );
-            }
-
-            return RefreshIndicator(
-              onRefresh: () => context.read<AddressListCubit>().loadAddresses(),
-              child: ListView.separated(
-                padding: EdgeInsets.all(16.w),
-                itemCount: addresses.length,
-                separatorBuilder: (_, _) => SizedBox(height: 12.h),
-                itemBuilder: (context, index) {
-                  final address = addresses[index];
-                  return AddressCard(
-                    address: address,
-                    isProcessing: address.id == processingId,
-                    onSetDefault: () => context
-                        .read<AddressListCubit>()
-                        .setDefaultAddress(address.id),
-                    onEdit: () => _editAddress(context, address),
-                    onDelete: () => _confirmDelete(context, address),
-                  );
-                },
+    return Scaffold(
+      backgroundColor: context.scaffoldBackgroundColor,
+      appBar: CustomAppBar(title: context.tr('addresses')),
+      body: BlocConsumer<AddressListCubit, AddressListState>(
+        listener: (context, state) {
+          if (state is AddressListActionError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
               ),
             );
-          },
-        ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(16.w),
-            child: AppButton(
-              label: 'إضافة عنوان جديد',
-              icon: Icons.add_rounded,
-              variant: AppButtonVariant.outline,
-              onPressed: () => _addAddress(context),
+          }
+        },
+        builder: (context, state) {
+          if (state is AddressListLoading || state is AddressListInitial) {
+            return const LoadingWidget();
+          }
+          if (state is AddressListError) {
+            return EmptyStateWidget(
+              title: state.message,
+              icon: Icons.error_outline_rounded,
+            );
+          }
+
+          final addresses = switch (state) {
+            AddressListLoaded(:final addresses) => addresses,
+            AddressListActionError(:final addresses) => addresses,
+            _ => const <Address>[],
+          };
+          final processingId = state is AddressListLoaded
+              ? state.processingAddressId
+              : null;
+
+          if (addresses.isEmpty) {
+            return EmptyStateWidget(
+              title: context.tr('noSavedAddresses'),
+              icon: Icons.location_off_outlined,
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => context.read<AddressListCubit>().loadAddresses(),
+            child: ListView.separated(
+              padding: EdgeInsets.all(16.w),
+              itemCount: addresses.length,
+              separatorBuilder: (_, _) => SizedBox(height: 12.h),
+              itemBuilder: (context, index) {
+                final address = addresses[index];
+                return AddressCard(
+                  address: address,
+                  isProcessing: address.id == processingId,
+                  onSetDefault: () => context
+                      .read<AddressListCubit>()
+                      .setDefaultAddress(address.id),
+                  onEdit: () => _editAddress(context, address),
+                  onDelete: () => _confirmDelete(context, address),
+                );
+              },
             ),
+          );
+        },
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: AppButton(
+            label: context.tr('addAddress'),
+            icon: Icons.add_rounded,
+            variant: AppButtonVariant.outline,
+            onPressed: () => _addAddress(context),
           ),
         ),
       ),

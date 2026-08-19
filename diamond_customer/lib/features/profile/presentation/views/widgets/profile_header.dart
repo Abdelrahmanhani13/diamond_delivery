@@ -12,6 +12,8 @@ import '../../../../../core/widgets/app_asset_image.dart';
 import '../../controller/profile_cubit.dart';
 import '../../controller/profile_state.dart';
 
+import 'package:diamond_customer/core/localization/app_localizations.dart';
+
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});
 
@@ -19,9 +21,9 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
-        String name = 'جاري التحميل...';
+        String name = context.tr('loading');
         String phone = '';
-        String badge = 'عضو ذهبي مميز';
+        String badge = context.tr('goldMember');
 
         if (state is ProfileLoaded) {
           final fullName =
@@ -30,9 +32,11 @@ class ProfileHeader extends StatelessWidget {
               ? fullName
               : (state.profile.phoneNumber.isNotEmpty
                     ? state.profile.phoneNumber
-                    : 'المستخدم');
+                    : 'User');
           phone = state.profile.phoneNumber;
-          badge = state.profile.membershipBadge;
+          badge = state.profile.membershipBadge.isEmpty || state.profile.membershipBadge == 'عضو ذهبي مميز'
+              ? context.tr('goldMember')
+              : state.profile.membershipBadge;
         } else if (state is ProfileUpdateSuccess) {
           final fullName =
               '${state.profile.firstName} ${state.profile.lastName}'.trim();
@@ -40,11 +44,13 @@ class ProfileHeader extends StatelessWidget {
               ? fullName
               : (state.profile.phoneNumber.isNotEmpty
                     ? state.profile.phoneNumber
-                    : 'المستخدم');
+                    : 'User');
           phone = state.profile.phoneNumber;
-          badge = state.profile.membershipBadge;
+          badge = state.profile.membershipBadge.isEmpty || state.profile.membershipBadge == 'عضو ذهبي مميز'
+              ? context.tr('goldMember')
+              : state.profile.membershipBadge;
         } else if (state is ProfileError) {
-          name = 'خطأ في التحميل';
+          name = context.tr('errorOccurred');
           phone = '';
         }
 

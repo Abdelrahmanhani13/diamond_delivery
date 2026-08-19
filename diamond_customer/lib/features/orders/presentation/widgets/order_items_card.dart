@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/app_card.dart';
@@ -23,37 +24,46 @@ class OrderItemsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currency = context.tr('currency');
+
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'عناصر الطلب (لقطة الطلب التاريخية)',
+            context.tr('items'),
             style: AppTextStyles.headingSmall.copyWith(
               fontWeight: FontWeight.bold,
+              color: context.textPrimaryColor,
             ),
           ),
           Gap(14.h),
           if (items.isEmpty)
-            Text('لا توجد تفاصيل عناصر مسبقة', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textHint))
+            Text(
+              context.tr('noOrdersYet'),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: context.textSecondaryColor,
+              ),
+            )
           else
             ...items.map((item) => _itemRow(
+                  context,
                   item.productName,
                   '× ${item.quantity}',
-                  '${item.totalPrice.toStringAsFixed(0)} ر.س',
+                  '${item.totalPrice.toStringAsFixed(0)} $currency',
                 )),
           const Divider(height: 24),
           if (subtotal != null)
-            _itemRow('المجموع الفرعي', '', '${subtotal!.toStringAsFixed(0)} ر.س'),
+            _itemRow(context, context.tr('subtotal'), '', '${subtotal!.toStringAsFixed(0)} $currency'),
           if (deliveryFee != null)
-            _itemRow('رسوم التوصيل', '', '${deliveryFee!.toStringAsFixed(0)} ر.س'),
-          _itemRow('الإجمالي النهائى', '', '${total.toStringAsFixed(0)} ر.س', bold: true),
+            _itemRow(context, context.tr('deliveryFee'), '', '${deliveryFee!.toStringAsFixed(0)} $currency'),
+          _itemRow(context, context.tr('total'), '', '${total.toStringAsFixed(0)} $currency', bold: true),
         ],
       ),
     );
   }
 
-  Widget _itemRow(String name, String qty, String price, {bool bold = false}) {
+  Widget _itemRow(BuildContext context, String name, String qty, String price, {bool bold = false}) {
     final style = bold ? AppTextStyles.bodyLarge : AppTextStyles.bodyMedium;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),
@@ -64,8 +74,8 @@ class OrderItemsCard extends StatelessWidget {
               name,
               style: style.copyWith(
                 color: bold
-                    ? AppColors.textPrimary
-                    : AppColors.textPrimary.withValues(alpha: 0.9),
+                    ? context.textPrimaryColor
+                    : context.textPrimaryColor.withValues(alpha: 0.9),
                 fontWeight: bold ? FontWeight.bold : FontWeight.normal,
               ),
             ),
@@ -75,6 +85,7 @@ class OrderItemsCard extends StatelessWidget {
               qty,
               style: AppTextStyles.bodySmall.copyWith(
                 fontWeight: FontWeight.bold,
+                color: context.textPrimaryColor,
               ),
             ),
           Gap(16.w),
@@ -82,7 +93,7 @@ class OrderItemsCard extends StatelessWidget {
             price,
             style: style.copyWith(
               fontWeight: bold ? FontWeight.w900 : FontWeight.bold,
-              color: bold ? AppColors.primary : AppColors.textPrimary,
+              color: bold ? context.primaryThemeColor : context.textPrimaryColor,
             ),
           ),
         ],

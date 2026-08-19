@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/localization/app_localizations.dart';
 import '../../../../../core/routes/app_routes.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
@@ -30,6 +31,8 @@ class ProductInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currency = context.tr('currency');
+
     return Padding(
       padding: EdgeInsets.all(20.w),
       child: Column(
@@ -41,7 +44,10 @@ class ProductInfoSection extends StatelessWidget {
               Expanded(
                 child: Text(
                   product.name,
-                  style: AppTextStyles.headingLarge.copyWith(fontWeight: FontWeight.bold),
+                  style: AppTextStyles.headingLarge.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: context.textPrimaryColor,
+                  ),
                 ),
               ),
               QuantitySelector(
@@ -61,7 +67,10 @@ class ProductInfoSection extends StatelessWidget {
               SizedBox(width: 4.w),
               Text(
                 '${product.rating}',
-                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: context.textPrimaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -73,18 +82,18 @@ class ProductInfoSection extends StatelessWidget {
             children: [
               if (product.discountPrice != null) ...[
                 Text(
-                  '${product.price} ر.س',
+                  '${product.price} $currency',
                   style: AppTextStyles.headingMedium.copyWith(
-                    color: AppColors.textHint,
+                    color: context.textSecondaryColor,
                     decoration: TextDecoration.lineThrough,
                   ),
                 ),
                 SizedBox(width: 8.w),
               ],
               Text(
-                '$price ر.س',
+                '$price $currency',
                 style: AppTextStyles.displayLarge.copyWith(
-                  color: AppColors.primary,
+                  color: context.primaryThemeColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -95,13 +104,16 @@ class ProductInfoSection extends StatelessWidget {
           
           Text(
             product.description,
-            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary, height: 1.6),
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: context.textSecondaryColor,
+              height: 1.6,
+            ),
           ),
           
           SizedBox(height: 28.h),
           
           if (relatedProducts.isNotEmpty) ...[
-            const SectionHeader(title: 'منتجات مشابهة'),
+            SectionHeader(title: context.isArabic ? 'منتجات مشابهة' : 'Similar Products'),
             SizedBox(height: 14.h),
             SizedBox(
               height: 220.h,
@@ -111,7 +123,10 @@ class ProductInfoSection extends StatelessWidget {
                 separatorBuilder: (context, index) => SizedBox(width: 12.w),
                 itemBuilder: (context, index) => ProductCard(
                   product: relatedProducts[index],
-                  onTap: () => context.push(AppRoutes.productDetails, extra: relatedProducts[index].id),
+                  onTap: () => context.push(
+                    AppRoutes.productDetails,
+                    extra: relatedProducts[index].id,
+                  ),
                 ),
               ),
             ),

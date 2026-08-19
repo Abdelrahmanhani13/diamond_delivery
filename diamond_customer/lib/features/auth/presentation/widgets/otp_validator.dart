@@ -1,4 +1,4 @@
-import 'otp_verification_view.dart';
+import '../views/otp_verification_view.dart';
 
 class OTPValidator {
   static String? validate(String? value) {

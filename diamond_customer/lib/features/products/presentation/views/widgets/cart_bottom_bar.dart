@@ -3,11 +3,10 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/app_radius.dart';
+import '../../../../../core/localization/app_localizations.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
 
-/// A sticky bottom bar showing the cart summary (item count, total)
-/// and a "View Cart" button.
 class CartBottomBar extends StatelessWidget {
   const CartBottomBar({
     super.key,
@@ -22,11 +21,13 @@ class CartBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currency = context.tr('currency');
+
     return SafeArea(
       child: Container(
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: context.surfaceColor,
           boxShadow: [
             BoxShadow(
               color: AppColors.shadow.withValues(alpha: 0.08),
@@ -43,15 +44,15 @@ class CartBottomBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'تم اختيار $totalItems منتجات',
+                  '${context.tr('items')}: $totalItems',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.textSecondaryColor,
                   ),
                 ),
                 Text(
-                  'المجموع: $totalPrice ر.س',
+                  '${context.tr('total')}: $totalPrice $currency',
                   style: AppTextStyles.headingSmall.copyWith(
-                    color: AppColors.primary,
+                    color: context.primaryThemeColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -59,7 +60,7 @@ class CartBottomBar extends StatelessWidget {
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: context.primaryThemeColor,
                 foregroundColor: AppColors.white,
                 padding: EdgeInsets.symmetric(
                   horizontal: 24.w,
@@ -72,7 +73,7 @@ class CartBottomBar extends StatelessWidget {
               onPressed: onViewCart,
               icon: const Icon(Icons.shopping_bag_outlined),
               label: Text(
-                'عرض السلة',
+                context.tr('cart'),
                 style: AppTextStyles.buttonMedium,
               ),
             ),

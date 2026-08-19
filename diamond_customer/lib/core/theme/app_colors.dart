@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 
 /// Centralized color palette for Diamond Village Customer App.
-/// Derived from the platform "نظام الألوان" design tokens.
-/// Never hardcode colors anywhere else in the app — always reference this class.
 class AppColors {
   AppColors._();
 
-  // Brand / semantic colors (from design system panel)
-  static const Color primary = Color(0xFF0F7A6D); // الأساسي
-  static const Color accent = Color(0xFFF2A93B); // المميز
-  static const Color success = Color(0xFF149C2E); // النجاح
-  static const Color error = Color(0xFFB31A1A); // الخطأ
-  static const Color surface = Color(0xFFFFFFFF); // السطح
+  // Brand / semantic colors (Light Mode Defaults)
+  static const Color primary = Color(0xFF0F7A6D);
+  static const Color accent = Color(0xFFF2A93B);
+  static const Color success = Color(0xFF149C2E);
+  static const Color error = Color(0xFFB31A1A);
+  static const Color surface = Color(0xFFFFFFFF);
 
-  // Extended neutrals (not present in the token panel but required for a
-  // production UI; kept in the same family as the provided palette).
+  // Extended Light Neutrals
   static const Color primaryDark = Color(0xFF0B5C52);
   static const Color primaryLight = Color(0xFFE6F2F0);
 
@@ -37,14 +34,50 @@ class AppColors {
 
   static const Color warning = Color(0xFFF2A93B);
   static const Color info = Color(0xFF2E7BB3);
-
   static const Color rating = Color(0xFFF2A93B);
-
   static const Color shadow = Color(0x1A0F7A6D);
+
+  // Dark Mode Tokens (Slate Dark Theme)
+  static const Color darkPrimary = Color(0xFF149C88);
+  static const Color darkScaffoldBackground = Color(0xFF0F172A);
+  static const Color darkSurface = Color(0xFF1E293B);
+  static const Color darkTextPrimary = Color(0xFFF8FAFC);
+  static const Color darkTextSecondary = Color(0xFF94A3B8);
+  static const Color darkTextHint = Color(0xFF64748B);
+  static const Color darkBorder = Color(0xFF334155);
+  static const Color darkDivider = Color(0xFF1E293B);
+  static const Color darkGreyLight = Color(0xFF334155);
 
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [primary, primaryDark],
   );
+}
+
+/// Context-aware extension to dynamically retrieve Light/Dark theme colors
+extension AppThemeColorsExtension on BuildContext {
+  bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
+
+  Color get scaffoldBackgroundColor => isDarkMode
+      ? AppColors.darkScaffoldBackground
+      : AppColors.scaffoldBackground;
+
+  Color get surfaceColor =>
+      isDarkMode ? AppColors.darkSurface : AppColors.surface;
+
+  Color get textPrimaryColor =>
+      isDarkMode ? AppColors.darkTextPrimary : AppColors.textPrimary;
+
+  Color get textSecondaryColor =>
+      isDarkMode ? AppColors.darkTextSecondary : AppColors.textSecondary;
+
+  Color get greyLightColor =>
+      isDarkMode ? AppColors.darkGreyLight : AppColors.greyLight;
+
+  Color get borderColor =>
+      isDarkMode ? AppColors.darkBorder : AppColors.border;
+
+  Color get primaryThemeColor =>
+      isDarkMode ? AppColors.darkPrimary : AppColors.primary;
 }

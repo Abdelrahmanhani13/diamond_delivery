@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/constants/app_radius.dart';
 
-/// Price breakdown card used in Cart and Checkout (subtotal, delivery,
-/// discount, total).
 class OrderSummaryWidget extends StatelessWidget {
   const OrderSummaryWidget({
     super.key,
@@ -22,32 +21,42 @@ class OrderSummaryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currency = context.tr('currency');
+
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('ملخص الطلب', style: AppTextStyles.headingSmall),
+          Text(
+            context.tr('orderDetails'),
+            style: AppTextStyles.headingSmall.copyWith(
+              color: context.textPrimaryColor,
+            ),
+          ),
           SizedBox(height: 12.h),
-          _row('المجموع الفرعي', '${subtotal.toStringAsFixed(0)} ر.س'),
-          _row('رسوم التوصيل', '${deliveryFee.toStringAsFixed(0)} ر.س'),
-          if (discount > 0) _row('الخصم', '- ${discount.toStringAsFixed(0)} ر.س', color: AppColors.success),
+          _row(context, context.tr('subtotal'), '${subtotal.toStringAsFixed(0)} $currency'),
+          _row(context, context.tr('deliveryFee'), '${deliveryFee.toStringAsFixed(0)} $currency'),
+          if (discount > 0)
+            _row(context, 'الخصم', '- ${discount.toStringAsFixed(0)} $currency', color: AppColors.success),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 10.h),
             child: const Divider(height: 1),
           ),
-          _row('الإجمالي', '${total.toStringAsFixed(0)} ر.س', bold: true),
+          _row(context, context.tr('total'), '${total.toStringAsFixed(0)} $currency', bold: true),
         ],
       ),
     );
   }
 
-  Widget _row(String label, String value, {bool bold = false, Color? color}) {
-    final style = bold ? AppTextStyles.bodyLarge : AppTextStyles.bodyMedium;
+  Widget _row(BuildContext context, String label, String value, {bool bold = false, Color? color}) {
+    final textColor = color ?? context.textPrimaryColor;
+    final style = (bold ? AppTextStyles.bodyLarge : AppTextStyles.bodyMedium).copyWith(color: textColor);
+
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),
       child: Row(
@@ -56,7 +65,9 @@ class OrderSummaryWidget extends StatelessWidget {
           Text(label, style: style),
           Text(
             value,
-            style: style.copyWith(fontWeight: bold ? FontWeight.w700 : FontWeight.w600, color: color ?? style.color),
+            style: style.copyWith(
+              fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
+            ),
           ),
         ],
       ),

@@ -6,6 +6,7 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/app_toast.dart';
@@ -48,28 +49,26 @@ class _OrderDetailsViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: BlocConsumer<OrderDetailsCubit, OrderDetailsState>(
-        listener: (context, state) {
-          if (state is OrderDetailsLoaded && state.message != null && state.message!.isNotEmpty) {
-            AppToast.info(context, message: state.message!);
-          } else if (state is OrderDetailsError) {
-            AppToast.error(context, message: state.message);
-          }
-        },
-        builder: (context, state) {
-          final cubit = context.read<OrderDetailsCubit>();
+    return BlocConsumer<OrderDetailsCubit, OrderDetailsState>(
+      listener: (context, state) {
+        if (state is OrderDetailsLoaded && state.message != null && state.message!.isNotEmpty) {
+          AppToast.info(context, message: state.message!);
+        } else if (state is OrderDetailsError) {
+          AppToast.error(context, message: state.message);
+        }
+      },
+      builder: (context, state) {
+        final cubit = context.read<OrderDetailsCubit>();
 
-          if (state is OrderDetailsLoading) {
-            return Scaffold(
-              backgroundColor: AppColors.scaffoldBackground,
-              appBar: const CustomAppBar(title: 'تفاصيل الطلب'),
-              body: const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              ),
-            );
-          }
+        if (state is OrderDetailsLoading) {
+          return Scaffold(
+            backgroundColor: context.scaffoldBackgroundColor,
+            appBar: CustomAppBar(title: context.tr('orderDetails')),
+            body: Center(
+              child: CircularProgressIndicator(color: context.primaryThemeColor),
+            ),
+          );
+        }
 
           if (state is OrderDetailsError && state is! OrderDetailsLoaded) {
             return Scaffold(
@@ -320,8 +319,7 @@ class _OrderDetailsViewBody extends StatelessWidget {
 
           return const SizedBox();
         },
-      ),
-    );
+      );
   }
 
   void _showCancelDialog(

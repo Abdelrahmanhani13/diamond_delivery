@@ -30,8 +30,12 @@ class LookupCubit extends Cubit<LookupState> {
       (failure) => emit(
         state.copyWith(isLoadingCountries: false, error: failure.message),
       ),
-      (countries) =>
-          emit(state.copyWith(isLoadingCountries: false, countries: countries)),
+      (countries) async {
+        emit(state.copyWith(isLoadingCountries: false, countries: countries));
+        if (countries.isNotEmpty && state.selectedCountry == null) {
+          await selectCountry(countries.first);
+        }
+      },
     );
   }
 
@@ -42,12 +46,17 @@ class LookupCubit extends Cubit<LookupState> {
       (failure) => emit(
         state.copyWith(isLoadingAddressTypes: false, error: failure.message),
       ),
-      (addressTypes) => emit(
-        state.copyWith(
-          isLoadingAddressTypes: false,
-          addressTypes: addressTypes,
-        ),
-      ),
+      (addressTypes) {
+        emit(
+          state.copyWith(
+            isLoadingAddressTypes: false,
+            addressTypes: addressTypes,
+          ),
+        );
+        if (addressTypes.isNotEmpty && state.selectedAddressType == null) {
+          selectAddressType(addressTypes.first);
+        }
+      },
     );
   }
 
@@ -81,12 +90,17 @@ class LookupCubit extends Cubit<LookupState> {
       (failure) => emit(
         state.copyWith(isLoadingGovernorates: false, error: failure.message),
       ),
-      (governorates) => emit(
-        state.copyWith(
-          isLoadingGovernorates: false,
-          governorates: governorates,
-        ),
-      ),
+      (governorates) async {
+        emit(
+          state.copyWith(
+            isLoadingGovernorates: false,
+            governorates: governorates,
+          ),
+        );
+        if (governorates.isNotEmpty && state.selectedGovernorate == null) {
+          await selectGovernorate(governorates.first);
+        }
+      },
     );
   }
 
@@ -106,11 +120,16 @@ class LookupCubit extends Cubit<LookupState> {
     result.fold(
       (failure) =>
           emit(state.copyWith(isLoadingCities: false, error: failure.message)),
-      (cities) => emit(state.copyWith(isLoadingCities: false, cities: cities)),
+      (cities) {
+        emit(state.copyWith(isLoadingCities: false, cities: cities));
+        if (cities.isNotEmpty && state.selectedCity == null) {
+          selectCity(cities.first);
+        }
+      },
     );
   }
 
-  /// Selecting a City (مفيش Areas بعد كده)
+  /// Selecting a City
   void selectCity(LookupItem city) {
     emit(state.copyWith(selectedCity: city, clearError: true));
   }

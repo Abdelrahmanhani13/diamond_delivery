@@ -1,3 +1,6 @@
+import 'package:diamond_customer/core/localization/app_localizations.dart';
+import 'package:diamond_customer/core/settings/settings_cubit.dart';
+import 'package:diamond_customer/core/settings/settings_state.dart';
 import 'package:diamond_customer/core/widgets/app_bottom_nav_bar.dart';
 import 'package:diamond_customer/features/profile/presentation/views/widgets/profile_header.dart';
 import 'package:flutter/material.dart';
@@ -38,187 +41,228 @@ class _ProfileViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
-        body: SafeArea(
-          child: Column(
-            children: [
-              // Custom Top Header Title
-              Padding(
-                padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'الملف الشخصي',
-                      style: AppTextStyles.headingLarge.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+    return Scaffold(
+      backgroundColor: context.scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Custom Top Header Title
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    context.tr('profile'),
+                    style: AppTextStyles.headingLarge.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: context.textPrimaryColor,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
 
-              Expanded(
-                child: BlocBuilder<ProfileCubit, ProfileState>(
-                  builder: (context, state) {
-                    if (state is ProfileLoading || state is ProfileInitial) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.primary,
-                        ),
-                      );
-                    }
+            Expanded(
+              child: BlocBuilder<ProfileCubit, ProfileState>(
+                builder: (context, state) {
+                  if (state is ProfileLoading || state is ProfileInitial) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: context.primaryThemeColor,
+                      ),
+                    );
+                  }
 
-                    if (state is ProfileError) {
-                      return Center(
-                        child: SingleChildScrollView(
-                          padding: EdgeInsets.all(24.w),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.error_outline_rounded,
-                                size: 56.sp,
-                                color: AppColors.error,
-                              ),
-                              Gap(16.h),
-                              Text(
-                                'تعذر تحميل بيانات الملف الشخصي',
-                                style: AppTextStyles.headingSmall.copyWith(
-                                  color: AppColors.textPrimary,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              Gap(8.h),
-                              Text(
-                                state.message,
-                                style: AppTextStyles.bodySmall.copyWith(
-                                  color: AppColors.textSecondary,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              Gap(24.h),
-                              AppButton(
-                                label: 'إعادة المحاولة',
-                                icon: Icons.refresh_rounded,
-                                variant: AppButtonVariant.outline,
-                                onPressed: () =>
-                                    context.read<ProfileCubit>().fetchProfile(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-
-                    ProfileEntity? profile;
-                    if (state is ProfileLoaded) {
-                      profile = state.profile;
-                    } else if (state is ProfileUpdateSuccess) {
-                      profile = state.profile;
-                    }
-
-                    final walletVal = profile != null
-                        ? '${profile.walletBalance.toStringAsFixed(0)} ر.س'
-                        : '0 ر.س';
-                    final ratingVal = profile != null
-                        ? profile.userRating.toStringAsFixed(1)
-                        : '5.0';
-                    final completedOrdersVal = profile != null
-                        ? '${profile.completedOrdersCount}'
-                        : '0';
-
-                    return ListView(
-                      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
-                      children: [
-                        // Header card
-                        const ProfileHeader()
-                            .animate()
-                            .fadeIn(duration: 400.ms)
-                            .slideY(begin: -0.05, end: 0),
-
-                        Gap(16.h),
-
-                        // Stats row (Wallet / Rating / Orders)
-                        Row(
+                  if (state is ProfileError) {
+                    return Center(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.all(24.w),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            ProfileStatCard(
-                              value: walletVal,
-                              label: 'المحفظة',
-                              icon: Icons.account_balance_wallet_outlined,
+                            Icon(
+                              Icons.error_outline_rounded,
+                              size: 56.sp,
+                              color: AppColors.error,
                             ),
-                            ProfileStatCard(
-                              value: ratingVal,
-                              label: 'التقييم',
-                              icon: Icons.star_rounded,
+                            Gap(16.h),
+                            Text(
+                              context.tr('errorOccurred'),
+                              style: AppTextStyles.headingSmall.copyWith(
+                                color: context.textPrimaryColor,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            ProfileStatCard(
-                              value: completedOrdersVal,
-                              label: 'طلب مكتمل',
-                              icon: Icons.receipt_long_outlined,
+                            Gap(8.h),
+                            Text(
+                              state.message,
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: context.textSecondaryColor,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            Gap(24.h),
+                            AppButton(
+                              label: context.tr('retry'),
+                              icon: Icons.refresh_rounded,
+                              variant: AppButtonVariant.outline,
+                              onPressed: () =>
+                                  context.read<ProfileCubit>().fetchProfile(),
                             ),
                           ],
-                        ).animate().fadeIn(delay: 150.ms, duration: 400.ms),
-
-                        Gap(20.h),
-
-                        // Main Operations Block
-                        const SectionTitle(title: 'العمليات الأساسية'),
-                        Gap(8.h),
-                        AppCard(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 4.w,
-                            vertical: 4.h,
-                          ),
-                          child: Column(
-                            children: [
-                              ProfileMenuItem(
-                                icon: Icons.location_on_outlined,
-                                label: 'عناويني المحفوظة',
-                                onTap: () =>
-                                    context.push(AppRoutes.addressList),
-                              ),
-                              const Divider(height: 1, indent: 56),
-                              ProfileMenuItem(
-                                icon: Icons.account_balance_wallet_outlined,
-                                label: 'رصيد المحفظة',
-                                trailingText: walletVal,
-                                onTap: () {},
-                              ),
-                              const Divider(height: 1, indent: 56),
-                              ProfileMenuItem(
-                                icon: Icons.favorite_border_rounded,
-                                label: 'المتاجر والمنتجات المفضلة',
-                                onTap: () => context.push(AppRoutes.favorites),
-                              ),
-                            ],
-                          ),
-                        ).animate().fadeIn(delay: 250.ms, duration: 400.ms),
-
-                        Gap(24.h),
-
-                        // Logout button
-                        AppButton(
-                          label: 'تسجيل خروج',
-                          variant: AppButtonVariant.danger,
-                          icon: Icons.logout_rounded,
-                          onPressed: () => _showLogoutDialog(context),
-                        ).animate().fadeIn(delay: 350.ms, duration: 400.ms),
-                      ],
+                        ),
+                      ),
                     );
-                  },
-                ),
+                  }
+
+                  ProfileEntity? profile;
+                  if (state is ProfileLoaded) {
+                    profile = state.profile;
+                  } else if (state is ProfileUpdateSuccess) {
+                    profile = state.profile;
+                  }
+
+                  final walletVal = profile != null
+                      ? '${profile.walletBalance.toStringAsFixed(0)} ${context.tr('currency')}'
+                      : '0 ${context.tr('currency')}';
+                  final ratingVal = profile != null
+                      ? profile.userRating.toStringAsFixed(1)
+                      : '5.0';
+                  final completedOrdersVal = profile != null
+                      ? '${profile.completedOrdersCount}'
+                      : '0';
+
+                  return ListView(
+                    padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
+                    children: [
+                      // Header card
+                      const ProfileHeader()
+                          .animate()
+                          .fadeIn(duration: 400.ms)
+                          .slideY(begin: -0.05, end: 0),
+
+                      Gap(16.h),
+
+                      // Stats row (Wallet / Rating / Orders)
+                      Row(
+                        children: [
+                          ProfileStatCard(
+                            value: walletVal,
+                            label: context.tr('wallet'),
+                            icon: Icons.account_balance_wallet_outlined,
+                          ),
+                          ProfileStatCard(
+                            value: ratingVal,
+                            label: context.tr('rating'),
+                            icon: Icons.star_rounded,
+                          ),
+                          ProfileStatCard(
+                            value: completedOrdersVal,
+                            label: context.tr('completedOrders'),
+                            icon: Icons.receipt_long_outlined,
+                          ),
+                        ],
+                      ).animate().fadeIn(delay: 150.ms, duration: 400.ms),
+
+                      Gap(20.h),
+
+                      // Main Operations Block
+                      SectionTitle(title: context.tr('mainOperations')),
+                      Gap(8.h),
+                      AppCard(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 4.w,
+                          vertical: 4.h,
+                        ),
+                        child: Column(
+                          children: [
+                            ProfileMenuItem(
+                              icon: Icons.location_on_outlined,
+                              label: context.tr('addresses'),
+                              onTap: () => context.push(AppRoutes.addressList),
+                            ),
+                            const Divider(height: 1, indent: 56),
+                            ProfileMenuItem(
+                              icon: Icons.account_balance_wallet_outlined,
+                              label: context.tr('walletBalance'),
+                              trailingText: walletVal,
+                              onTap: () {},
+                            ),
+                            const Divider(height: 1, indent: 56),
+                            ProfileMenuItem(
+                              icon: Icons.favorite_border_rounded,
+                              label: context.tr('favorites'),
+                              onTap: () => context.push(AppRoutes.favorites),
+                            ),
+                          ],
+                        ),
+                      ).animate().fadeIn(delay: 250.ms, duration: 400.ms),
+
+                      Gap(16.h),
+
+                      // App Settings Block (Theme & Language)
+                      SectionTitle(title: context.tr('appSettings')),
+                      Gap(8.h),
+                      BlocBuilder<SettingsCubit, SettingsState>(
+                        builder: (context, settingsState) {
+                          final isDark =
+                              settingsState.themeMode == ThemeMode.dark;
+                          final isAr =
+                              settingsState.locale.languageCode == 'ar';
+
+                          return AppCard(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 4.w,
+                              vertical: 4.h,
+                            ),
+                            child: Column(
+                              children: [
+                                ProfileMenuItem(
+                                  icon: isDark
+                                      ? Icons.dark_mode_outlined
+                                      : Icons.light_mode_outlined,
+                                  label: context.tr('themeMode'),
+                                  trailingText: isDark ? 'Dark' : 'Light',
+                                  onTap: () => context
+                                      .read<SettingsCubit>()
+                                      .toggleTheme(),
+                                ),
+                                const Divider(height: 1, indent: 56),
+                                ProfileMenuItem(
+                                  icon: Icons.language_rounded,
+                                  label: context.tr('language'),
+                                  trailingText: isAr ? 'العربية' : 'English',
+                                  onTap: () => context
+                                      .read<SettingsCubit>()
+                                      .toggleLocale(),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ).animate().fadeIn(delay: 300.ms, duration: 400.ms),
+
+                      Gap(24.h),
+
+                      // Logout button
+                      AppButton(
+                        label: context.tr('logout'),
+                        variant: AppButtonVariant.danger,
+                        icon: Icons.logout_rounded,
+                        onPressed: () => _showLogoutDialog(context),
+                      ).animate().fadeIn(delay: 350.ms, duration: 400.ms),
+                    ],
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        bottomNavigationBar: AppBottomNavBar(
-          currentIndex: 0,
-          onTap: (index) => _onNavTap(context, index),
-        ),
+      ),
+      bottomNavigationBar: AppBottomNavBar(
+        currentIndex: 0,
+        onTap: (index) => _onNavTap(context, index),
       ),
     );
   }
@@ -244,12 +288,12 @@ class _ProfileViewBody extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('تسجيل خروج'),
-        content: const Text('هل أنت متأكد أنك تريد تسجيل الخروج؟'),
+        title: Text(context.tr('logoutConfirmTitle')),
+        content: Text(context.tr('logoutConfirmMessage')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('إلغاء'),
+            child: Text(context.tr('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -269,9 +313,9 @@ class _ProfileViewBody extends StatelessWidget {
                 context.go(AppRoutes.login);
               }
             },
-            child: const Text(
-              'تسجيل خروج',
-              style: TextStyle(color: Colors.red),
+            child: Text(
+              context.tr('logout'),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],

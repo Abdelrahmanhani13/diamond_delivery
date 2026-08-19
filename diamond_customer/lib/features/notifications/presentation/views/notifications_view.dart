@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../widgets/notification_tile.dart';
 
-/// Notifications screen — reached from Profile's "الإشعارات" item.
 class NotificationsView extends StatelessWidget {
   const NotificationsView({super.key});
 
@@ -34,25 +34,24 @@ class NotificationsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
-        appBar: const CustomAppBar(title: 'الإشعارات'),
-        body: _notifications.isEmpty
-            ? const EmptyStateWidget(
-                title: 'لا توجد إشعارات',
-                message: 'ستظهر إشعاراتك هنا عند وصولها',
-                icon: Icons.notifications_none_rounded,
-              )
-            : ListView.separated(
-                padding: EdgeInsets.all(16.w),
-                itemCount: _notifications.length,
-                separatorBuilder: (_, _) => SizedBox(height: 10.h),
-                itemBuilder: (context, index) =>
-                    NotificationTile(data: _notifications[index]),
-              ),
-      ),
+    return Scaffold(
+      backgroundColor: context.scaffoldBackgroundColor,
+      appBar: CustomAppBar(title: context.tr('notifications')),
+      body: _notifications.isEmpty
+          ? EmptyStateWidget(
+              title: context.isArabic ? 'لا توجد إشعارات' : 'No Notifications',
+              message: context.isArabic
+                  ? 'ستظهر إشعاراتك هنا عند وصولها'
+                  : 'Your notifications will appear here',
+              icon: Icons.notifications_none_rounded,
+            )
+          : ListView.separated(
+              padding: EdgeInsets.all(16.w),
+              itemCount: _notifications.length,
+              separatorBuilder: (_, _) => SizedBox(height: 10.h),
+              itemBuilder: (context, index) =>
+                  NotificationTile(data: _notifications[index]),
+            ),
     );
   }
 }

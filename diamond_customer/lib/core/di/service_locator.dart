@@ -1,3 +1,4 @@
+import 'package:diamond_customer/core/settings/settings_cubit.dart';
 import 'package:diamond_customer/core/api/api_factory.dart';
 import 'package:diamond_customer/core/network/nominatim_client.dart';
 import 'package:diamond_customer/features/cart/data/datasource/cart_remote_data_source.dart';
@@ -122,6 +123,10 @@ void setupServiceLocator() {
   getIt.registerLazySingleton<AuthEventBus>(() => AuthEventBus());
   getIt.registerLazySingleton<SecureStorageService>(
     () => SecureStorageServiceImpl(getIt()),
+  );
+
+  getIt.registerLazySingleton(
+    () => SettingsCubit(getIt()),
   );
   getIt.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(getIt()));
   getIt.registerLazySingleton<DioFactory>(() => DioFactory(getIt(), getIt()));

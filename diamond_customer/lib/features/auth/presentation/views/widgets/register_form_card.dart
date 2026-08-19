@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
+import '../../../../../core/localization/app_localizations.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/widgets/app_text_field.dart';
 
-/// The main form card containing all registration input fields:
-/// first name, last name, email, phone, password, and date of birth.
 class RegisterFormCard extends StatelessWidget {
   const RegisterFormCard({
     super.key,
@@ -58,7 +57,7 @@ class RegisterFormCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(24.r),
         boxShadow: [
           BoxShadow(
@@ -71,14 +70,13 @@ class RegisterFormCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // First Name & Last Name side by side
           Row(
             children: [
               Expanded(
                 child: AppTextField(
                   controller: firstNameController,
-                  label: 'الاسم الأول',
-                  hint: 'أحمد',
+                  label: context.tr('firstName'),
+                  hint: 'John',
                   prefixIcon: Icons.person_outline_rounded,
                   errorText: firstNameError,
                   onChanged: onFirstNameChanged,
@@ -88,8 +86,8 @@ class RegisterFormCard extends StatelessWidget {
               Expanded(
                 child: AppTextField(
                   controller: lastNameController,
-                  label: 'اسم العائلة',
-                  hint: 'مصطفى',
+                  label: context.tr('lastName'),
+                  hint: 'Doe',
                   prefixIcon: Icons.person_outline_rounded,
                   errorText: lastNameError,
                   onChanged: onLastNameChanged,
@@ -102,8 +100,8 @@ class RegisterFormCard extends StatelessWidget {
 
           AppTextField(
             controller: emailController,
-            label: 'البريد الإلكتروني',
-            hint: 'ahmed.mostafa@example.com',
+            label: context.tr('email'),
+            hint: 'john.doe@example.com',
             prefixIcon: Icons.email_outlined,
             keyboardType: TextInputType.emailAddress,
             errorText: emailError,
@@ -114,7 +112,7 @@ class RegisterFormCard extends StatelessWidget {
 
           AppTextField(
             controller: phoneController,
-            label: 'رقم الهاتف',
+            label: context.tr('phoneNumber'),
             hint: '01012345678',
             prefixIcon: Icons.phone_iphone_rounded,
             keyboardType: TextInputType.phone,
@@ -126,7 +124,7 @@ class RegisterFormCard extends StatelessWidget {
 
           AppTextField(
             controller: passwordController,
-            label: 'كلمة المرور',
+            label: context.tr('password'),
             hint: '••••••••',
             obscureText: obscurePassword,
             prefixIcon: Icons.lock_outline_rounded,
@@ -138,7 +136,7 @@ class RegisterFormCard extends StatelessWidget {
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
                 size: 20.sp,
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
               ),
               onPressed: onToggleObscure,
             ),
@@ -146,19 +144,18 @@ class RegisterFormCard extends StatelessWidget {
 
           Gap(16.h),
 
-          // Date of Birth picker
           GestureDetector(
             onTap: onPickDateOfBirth,
             child: AbsorbPointer(
               child: AppTextField(
                 controller: dobController,
-                label: 'تاريخ الميلاد (اختياري)',
+                label: context.isArabic ? 'تاريخ الميلاد (اختياري)' : 'Date of Birth (Optional)',
                 hint: '2000-05-14',
                 prefixIcon: Icons.cake_outlined,
                 suffixIcon: Icon(
                   Icons.calendar_today_outlined,
                   size: 20.sp,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondaryColor,
                 ),
               ),
             ),

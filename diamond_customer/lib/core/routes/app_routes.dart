@@ -15,11 +15,11 @@ import '../../features/profile/presentation/views/favorites_view.dart';
 
 import '../../features/splash/presentation/views/splash_view.dart';
 import '../../features/onboarding/presentation/views/onboarding_view.dart';
-import '../../features/auth/presentation/widgets/login_view.dart';
-import '../../features/auth/presentation/widgets/register_view.dart';
-import '../../features/auth/presentation/widgets/forgot_password_view.dart';
-import '../../features/auth/presentation/widgets/otp_verification_view.dart';
-import '../../features/auth/presentation/widgets/reset_password_view.dart';
+import '../../features/auth/presentation/views/login_view.dart';
+import '../../features/auth/presentation/views/register_view.dart';
+import '../../features/auth/presentation/views/forgot_password_view.dart';
+import '../../features/auth/presentation/views/otp_verification_view.dart';
+import '../../features/auth/presentation/views/reset_password_view.dart';
 import '../../features/home/presentation/views/home_view.dart';
 import '../../features/home/presentation/views/categories_view.dart';
 import '../../features/search/presentation/views/search_view.dart';

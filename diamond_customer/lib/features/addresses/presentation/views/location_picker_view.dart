@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
@@ -63,12 +64,10 @@ class _LocationPickerBodyState extends State<_LocationPickerBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
-        appBar: const CustomAppBar(title: 'تحديد موقع التوصيل'),
-        body: BlocConsumer<LocationPickerCubit, LocationPickerState>(
+    return Scaffold(
+      backgroundColor: context.scaffoldBackgroundColor,
+      appBar: CustomAppBar(title: context.isArabic ? 'تحديد موقع التوصيل' : 'Select Delivery Location'),
+      body: BlocConsumer<LocationPickerCubit, LocationPickerState>(
           listener: (context, state) {
             if (state is LocationPickerError) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -234,7 +233,6 @@ class _LocationPickerBodyState extends State<_LocationPickerBody> {
             );
           },
         ),
-      ),
-    );
+      );
   }
 }

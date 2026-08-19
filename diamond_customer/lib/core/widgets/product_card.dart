@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../localization/app_localizations.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../constants/app_radius.dart';
@@ -13,17 +14,19 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currency = context.tr('currency');
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadius.md),
       child: Container(
         width: 160.w,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: context.surfaceColor,
           borderRadius: BorderRadius.circular(AppRadius.md),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadow,
+              color: AppColors.shadow.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -38,15 +41,15 @@ class ProductCard extends StatelessWidget {
                 AspectRatio(
                   aspectRatio: 1,
                   child: Container(
-                    color: AppColors.greyLight,
+                    color: context.greyLightColor,
                     child: product.imageUrls.isNotEmpty
                         ? Image.network(
                             product.imageUrls.first,
                             fit: BoxFit.cover,
                           )
-                        : const Icon(
+                        : Icon(
                             Icons.fastfood,
-                            color: AppColors.textHint,
+                            color: context.textSecondaryColor,
                             size: 50,
                           ),
                   ),
@@ -80,7 +83,7 @@ class ProductCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(AppRadius.xs),
                       ),
                       child: Text(
-                        'نفدت الكمية',
+                        'Out of Stock',
                         style: AppTextStyles.caption.copyWith(
                           color: AppColors.white,
                         ),
@@ -98,6 +101,7 @@ class ProductCard extends StatelessWidget {
                     product.name,
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: context.textPrimaryColor,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -106,7 +110,7 @@ class ProductCard extends StatelessWidget {
                   Text(
                     product.vendorName ?? '',
                     style: AppTextStyles.caption.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondaryColor,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -120,16 +124,16 @@ class ProductCard extends StatelessWidget {
                         children: [
                           if (product.discountPrice != null)
                             Text(
-                              '${product.price} ر.س',
+                              '${product.price} $currency',
                               style: AppTextStyles.caption.copyWith(
                                 decoration: TextDecoration.lineThrough,
-                                color: AppColors.textHint,
+                                color: context.textSecondaryColor,
                               ),
                             ),
                           Text(
-                            '${product.discountPrice ?? product.price} ر.س',
+                            '${product.discountPrice ?? product.price} $currency',
                             style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.primary,
+                              color: context.primaryThemeColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -137,7 +141,7 @@ class ProductCard extends StatelessWidget {
                       ),
                       Icon(
                         Icons.add_shopping_cart,
-                        color: AppColors.primary,
+                        color: context.primaryThemeColor,
                         size: 20.sp,
                       ),
                     ],

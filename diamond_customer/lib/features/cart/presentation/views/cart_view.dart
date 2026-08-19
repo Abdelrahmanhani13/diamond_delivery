@@ -17,6 +17,8 @@ import '../controller/cart_state.dart';
 import '../widgets/cart_item_widget.dart';
 import '../widgets/order_summary_widget.dart';
 
+import '../../../../core/localization/app_localizations.dart';
+
 class CartView extends StatelessWidget {
   const CartView({super.key});
 
@@ -34,28 +36,26 @@ class _CartViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: BlocConsumer<CartCubit, CartState>(
-        listener: (context, state) {
-          if (state is CartLoaded && state.message != null && state.message!.isNotEmpty) {
-            AppToast.error(context, message: state.message!);
-          } else if (state is CartError) {
-            AppToast.error(context, message: state.message);
-          }
-        },
-        builder: (context, state) {
-          final cartCubit = context.read<CartCubit>();
+    return BlocConsumer<CartCubit, CartState>(
+      listener: (context, state) {
+        if (state is CartLoaded && state.message != null && state.message!.isNotEmpty) {
+          AppToast.error(context, message: state.message!);
+        } else if (state is CartError) {
+          AppToast.error(context, message: state.message);
+        }
+      },
+      builder: (context, state) {
+        final cartCubit = context.read<CartCubit>();
 
-          if (state is CartLoading) {
-            return Scaffold(
-              backgroundColor: AppColors.scaffoldBackground,
-              appBar: const CustomAppBar(title: 'سلة التسوق'),
-              body: const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              ),
-            );
-          }
+        if (state is CartLoading) {
+          return Scaffold(
+            backgroundColor: context.scaffoldBackgroundColor,
+            appBar: CustomAppBar(title: context.tr('cart')),
+            body: Center(
+              child: CircularProgressIndicator(color: context.primaryThemeColor),
+            ),
+          );
+        }
 
           if (state is CartError && state is! CartLoaded) {
             return Scaffold(
@@ -136,8 +136,8 @@ class _CartViewBody extends StatelessWidget {
                               ),
                               if (cart.vendorMinimumOrder > 0)
                                 Text(
-                                  'الحد الأدنى للطلب: ${cart.vendorMinimumOrder.toStringAsFixed(0)} ر.س',
-                                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                                  'الحد الأدنى للطلب: ${cart.vendorMinimumOrder.toStringAsFixed(0)} ${context.tr('currency')}',
+                                   style: AppTextStyles.bodySmall.copyWith(color: context.textSecondaryColor),
                                 ),
                             ],
                           ),
@@ -194,7 +194,7 @@ class _CartViewBody extends StatelessWidget {
                     ],
                   ),
                   child: AppButton(
-                    label: 'إتمام الطلب • ${cart.total.toStringAsFixed(0)} ر.س',
+                    label: '${context.tr('checkout')} • ${cart.total.toStringAsFixed(0)} ${context.tr('currency')}',
                     icon: Icons.payment_outlined,
                     onPressed: () => context.push(AppRoutes.checkout),
                   ),
@@ -205,8 +205,7 @@ class _CartViewBody extends StatelessWidget {
 
           return const SizedBox();
         },
-      ),
-    );
+      );
   }
 
   void _confirmClearCart(BuildContext context, CartCubit cartCubit) {

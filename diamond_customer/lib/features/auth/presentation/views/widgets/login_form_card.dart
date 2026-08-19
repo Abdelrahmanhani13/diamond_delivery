@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/localization/app_localizations.dart';
 import '../../../../../core/routes/app_routes.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/widgets/app_button.dart';
@@ -40,7 +41,7 @@ class LoginFormCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(24.r),
         boxShadow: [
           BoxShadow(
@@ -55,7 +56,7 @@ class LoginFormCard extends StatelessWidget {
         children: [
           AppTextField(
             controller: phoneController,
-            label: 'رقم الهاتف',
+            label: context.tr('phoneNumber'),
             hint: '01xxxxxxxxx',
             prefixIcon: Icons.phone_android_outlined,
             keyboardType: TextInputType.phone,
@@ -67,7 +68,7 @@ class LoginFormCard extends StatelessWidget {
 
           AppTextField(
             controller: passwordController,
-            label: 'كلمة المرور',
+            label: context.tr('password'),
             hint: '••••••••',
             obscureText: obscure,
             prefixIcon: Icons.lock_outline_rounded,
@@ -90,7 +91,7 @@ class LoginFormCard extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: TextButton(
               onPressed: () => context.push(AppRoutes.forgotPassword),
-              child: const Text('نسيت كلمة المرور؟'),
+              child: Text(context.tr('forgotPassword')),
             ),
           ),
 
@@ -100,7 +101,7 @@ class LoginFormCard extends StatelessWidget {
             builder: (context, state) {
               final isLoading = state is LoginLoading;
               return AppButton(
-                label: isLoading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول',
+                label: isLoading ? context.tr('loading') : context.tr('login'),
                 onPressed: isLoading ? null : onSubmit,
               );
             },

@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
 import '../../../../core/constants/app_radius.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/app_button.dart';
@@ -15,22 +16,22 @@ class OrderCard extends StatelessWidget {
   const OrderCard({
     super.key,
     required this.order,
-    required this.onDetails,
+    this.onTap,
   });
 
   final OrderModel order;
-  final VoidCallback onDetails;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    final currency = context.tr('currency');
     final dateStr = order.createdAt != null
         ? DateFormat('yyyy/MM/dd • hh:mm a').format(order.createdAt!)
         : '';
-    final vendorName = order.vendorNameArabic?.isNotEmpty == true
-        ? order.vendorNameArabic!
-        : (order.vendorNameEnglish ?? 'المتجر');
+    final vendorName = context.localizedText(order.vendorNameArabic, order.vendorNameEnglish);
 
     return AppCard(
+      onTap: onTap,
       padding: EdgeInsets.all(16.w),
       child: Column(
         children: [
@@ -45,13 +46,19 @@ class OrderCard extends StatelessWidget {
                         width: 50.w,
                         height: 50.w,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.storefront_rounded),
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.storefront_rounded,
+                          color: context.primaryThemeColor,
+                        ),
                       )
                     : Container(
                         width: 50.w,
                         height: 50.w,
-                        color: AppColors.greyLight,
-                        child: const Icon(Icons.storefront_rounded, color: AppColors.primary),
+                        color: context.greyLightColor,
+                        child: Icon(
+                          Icons.storefront_rounded,
+                          color: context.primaryThemeColor,
+                        ),
                       ),
               ),
               Gap(12.w),
@@ -60,16 +67,17 @@ class OrderCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      vendorName,
+                      vendorName.isNotEmpty ? vendorName : 'Vendor',
                       style: AppTextStyles.bodyLarge.copyWith(
                         fontWeight: FontWeight.bold,
+                        color: context.textPrimaryColor,
                       ),
                     ),
                     Gap(2.h),
                     Text(
-                      'رقم الطلب: ${order.orderNumber}',
+                      '${context.tr('orderNumber')}: ${order.orderNumber}',
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.textSecondaryColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -78,7 +86,7 @@ class OrderCard extends StatelessWidget {
                       Text(
                         dateStr,
                         style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textHint,
+                          color: context.textSecondaryColor,
                           fontSize: 11.sp,
                         ),
                       ),
@@ -101,26 +109,26 @@ class OrderCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${order.total.toStringAsFixed(0)} ر.س',
+                    '${order.total.toStringAsFixed(0)} $currency',
                     style: AppTextStyles.headingSmall.copyWith(
-                      color: AppColors.primary,
+                      color: context.primaryThemeColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   if (order.itemCount != null)
                     Text(
-                      '${order.itemCount} عناصر',
+                      '${order.itemCount} ${context.tr('items')}',
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.textSecondaryColor,
                       ),
                     ),
                 ],
               ),
               AppButton(
-                label: 'التفاصيل',
+                label: context.tr('orderDetails'),
                 height: 36.h,
                 fullWidth: false,
-                onPressed: onDetails,
+                onPressed: onTap,
               ),
             ],
           ),

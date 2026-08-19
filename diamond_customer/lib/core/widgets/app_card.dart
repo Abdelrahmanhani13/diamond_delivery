@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../constants/app_radius.dart';
 import '../theme/app_colors.dart';
 
-/// Elevated surface card with optional tap, shadow, and padding.
 class AppCard extends StatelessWidget {
   const AppCard({
     super.key,
@@ -32,12 +31,12 @@ class AppCard extends StatelessWidget {
       margin: margin,
       padding: padding ?? EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: color ?? AppColors.surface,
+        color: color ?? context.surfaceColor,
         borderRadius: radius,
         boxShadow: showShadow
             ? [
                 BoxShadow(
-                  color: AppColors.shadow,
+                  color: AppColors.shadow.withValues(alpha: 0.05),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),

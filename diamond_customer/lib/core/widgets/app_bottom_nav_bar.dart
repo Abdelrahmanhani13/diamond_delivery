@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../localization/app_localizations.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
-/// App-wide bottom navigation bar matching the Figma:
-/// الرئيسية (Home, highlighted pill) - ابحث (Search) - طلباتي (Orders) - شخصي (Profile)
 class AppBottomNavBar extends StatelessWidget {
   const AppBottomNavBar({
     super.key,
@@ -15,43 +14,56 @@ class AppBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  static const _items = [
-    _NavItemData(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'شخصي'),
-    _NavItemData(icon: Icons.receipt_long_outlined, activeIcon: Icons.receipt_long_rounded, label: 'طلباتي'),
-    _NavItemData(icon: Icons.search_rounded, activeIcon: Icons.search_rounded, label: 'ابحث'),
-    _NavItemData(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'الرئيسية'),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Container(
-        padding: EdgeInsets.only(top: 10.h, bottom: 10.h),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow,
-              blurRadius: 16,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          top: false,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(_items.length, (index) {
-              final item = _items[index];
-              final bool selected = index == currentIndex;
-              return _NavTile(
-                item: item,
-                selected: selected,
-                onTap: () => onTap(index),
-              );
-            }),
+    final items = [
+      _NavItemData(
+        icon: Icons.person_outline_rounded,
+        activeIcon: Icons.person_rounded,
+        key: 'profile',
+      ),
+      _NavItemData(
+        icon: Icons.receipt_long_outlined,
+        activeIcon: Icons.receipt_long_rounded,
+        key: 'orders',
+      ),
+      _NavItemData(
+        icon: Icons.search_rounded,
+        activeIcon: Icons.search_rounded,
+        key: 'search',
+      ),
+      _NavItemData(
+        icon: Icons.home_outlined,
+        activeIcon: Icons.home_rounded,
+        key: 'home',
+      ),
+    ];
+
+    return Container(
+      padding: EdgeInsets.only(top: 10.h, bottom: 10.h),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withValues(alpha: 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
           ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(items.length, (index) {
+            final item = items[index];
+            final bool selected = index == currentIndex;
+            return _NavTile(
+              item: item,
+              selected: selected,
+              onTap: () => onTap(index),
+            );
+          }),
         ),
       ),
     );
@@ -62,12 +74,12 @@ class _NavItemData {
   const _NavItemData({
     required this.icon,
     required this.activeIcon,
-    required this.label,
+    required this.key,
   });
 
   final IconData icon;
   final IconData activeIcon;
-  final String label;
+  final String key;
 }
 
 class _NavTile extends StatelessWidget {
@@ -83,6 +95,9 @@ class _NavTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final activeColor = context.primaryThemeColor;
+    final unselectedColor = context.textSecondaryColor;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20.r),
@@ -90,7 +105,7 @@ class _NavTile extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : Colors.transparent,
+          color: selected ? activeColor : Colors.transparent,
           borderRadius: BorderRadius.circular(20.r),
         ),
         child: Column(
@@ -99,13 +114,13 @@ class _NavTile extends StatelessWidget {
             Icon(
               selected ? item.activeIcon : item.icon,
               size: 22.sp,
-              color: selected ? AppColors.textOnPrimary : AppColors.textSecondary,
+              color: selected ? AppColors.textOnPrimary : unselectedColor,
             ),
             if (!selected) ...[
               SizedBox(height: 4.h),
               Text(
-                item.label,
-                style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
+                context.tr(item.key),
+                style: AppTextStyles.caption.copyWith(color: unselectedColor),
               ),
             ],
           ],

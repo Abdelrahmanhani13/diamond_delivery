@@ -17,86 +17,84 @@ class ProductDetailsView extends StatefulWidget {
 
 class _ProductDetailsViewState extends State<ProductDetailsView> {
   int _quantity = 1;
-  bool _isFavorite = false; // We can sync this with FavoritesCubit later
+  bool _isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
-        body: SafeArea(
-          child: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
-            builder: (context, state) {
-              if (state is ProductDetailsInitial || state is ProductDetailsLoading) {
-                return const Center(child: CircularProgressIndicator(color: AppColors.primary));
-              }
+    return Scaffold(
+      backgroundColor: context.scaffoldBackgroundColor,
+      body: SafeArea(
+        child: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
+          builder: (context, state) {
+            if (state is ProductDetailsInitial || state is ProductDetailsLoading) {
+              return Center(
+                child: CircularProgressIndicator(color: context.primaryThemeColor),
+              );
+            }
 
-              if (state is ProductDetailsError) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-                      SizedBox(height: 16.h),
-                      Text(state.message),
-                    ],
-                  ),
-                );
-              }
-
-              if (state is ProductDetailsLoaded) {
-                final product = state.product;
-                final relatedProducts = state.relatedProducts;
-                final price = product.discountPrice ?? product.price;
-                _isFavorite = product.isFavorite; // Initial value from product
-
-                return Stack(
+            if (state is ProductDetailsError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ListView(
-                      padding: EdgeInsets.only(bottom: 100.h),
-                      children: [
-                        ProductHeaderGallery(
-                          imageUrls: product.imageUrls,
-                          isFavorite: _isFavorite,
-                          onFavoriteToggle: () {
-                            setState(() {
-                              _isFavorite = !_isFavorite;
-                            });
-                          },
-                        ),
-                        
-                        // Body
-                        ProductInfoSection(
-                          product: product,
-                          relatedProducts: relatedProducts,
-                          price: price,
-                          quantity: _quantity,
-                          onQuantityIncrement: () => setState(() => _quantity++),
-                          onQuantityDecrement: () => setState(() {
-                            if (_quantity > 1) _quantity--;
-                          }),
-                        ),
-                      ],
-                    ),
-                    
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: AddToCartBottomBar(
-                        productId: product.id,
+                    const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                    SizedBox(height: 16.h),
+                    Text(state.message),
+                  ],
+                ),
+              );
+            }
+
+            if (state is ProductDetailsLoaded) {
+              final product = state.product;
+              final relatedProducts = state.relatedProducts;
+              final price = product.discountPrice ?? product.price;
+              _isFavorite = product.isFavorite;
+
+              return Stack(
+                children: [
+                  ListView(
+                    padding: EdgeInsets.only(bottom: 100.h),
+                    children: [
+                      ProductHeaderGallery(
+                        imageUrls: product.imageUrls,
+                        isFavorite: _isFavorite,
+                        onFavoriteToggle: () {
+                          setState(() {
+                            _isFavorite = !_isFavorite;
+                          });
+                        },
+                      ),
+                      
+                      ProductInfoSection(
+                        product: product,
+                        relatedProducts: relatedProducts,
                         price: price,
                         quantity: _quantity,
+                        onQuantityIncrement: () => setState(() => _quantity++),
+                        onQuantityDecrement: () => setState(() {
+                          if (_quantity > 1) _quantity--;
+                        }),
                       ),
+                    ],
+                  ),
+                  
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: AddToCartBottomBar(
+                      productId: product.id,
+                      price: price,
+                      quantity: _quantity,
                     ),
-                  ],
-                );
-              }
+                  ),
+                ],
+              );
+            }
 
-              return const SizedBox();
-            },
-          ),
+            return const SizedBox();
+          },
         ),
       ),
     );

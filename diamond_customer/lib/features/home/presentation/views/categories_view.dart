@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -16,83 +17,79 @@ class CategoriesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
-        appBar: const CustomAppBar(title: 'جميع التصنيفات'),
-        body: BlocBuilder<CategoriesCubit, CategoriesState>(
-          builder: (context, state) {
-            if (state is CategoriesInitial || state is CategoriesLoading) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              );
+    return Scaffold(
+      backgroundColor: context.scaffoldBackgroundColor,
+      appBar: CustomAppBar(title: context.tr('categories')),
+      body: BlocBuilder<CategoriesCubit, CategoriesState>(
+        builder: (context, state) {
+          if (state is CategoriesInitial || state is CategoriesLoading) {
+            return Center(
+              child: CircularProgressIndicator(color: context.primaryThemeColor),
+            );
+          }
+
+          if (state is CategoriesError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    size: 48,
+                    color: AppColors.error,
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(state.message),
+                  SizedBox(height: 16.h),
+                  ElevatedButton(
+                    onPressed: () =>
+                        context.read<CategoriesCubit>()..fetchVendorCategories(),
+                    child: Text(context.tr('retry')),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (state is CategoriesLoaded) {
+            final categories = state.categories;
+
+            if (categories.isEmpty) {
+              return Center(child: Text(context.tr('noResults')));
             }
 
-            if (state is CategoriesError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: AppColors.error,
-                    ),
-                    SizedBox(height: 16.h),
-                    Text(state.message),
-                    SizedBox(height: 16.h),
-                    ElevatedButton(
-                      onPressed: () =>
-                          context.read<CategoriesCubit>()
-                            ..fetchVendorCategories(),
-                      child: const Text('إعادة المحاولة'),
-                    ),
-                  ],
-                ),
-              );
-            }
+            return GridView.builder(
+              padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 24.h),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 14.h,
+                crossAxisSpacing: 12.w,
+                childAspectRatio: 0.82,
+              ),
+              itemCount: categories.length,
+              itemBuilder: (context, index) {
+                final cat = categories[index];
 
-            if (state is CategoriesLoaded) {
-              final categories = state.categories;
+                return _CategoryTile(
+                      category: cat,
+                      onTap: () => context.push(
+                        AppRoutes.storesList,
+                      ),
+                    )
+                    .animate()
+                    .fadeIn(delay: (index * 30).ms, duration: 300.ms)
+                    .scale(
+                      begin: const Offset(0.92, 0.92),
+                      end: const Offset(1, 1),
+                      duration: 300.ms,
+                      curve: Curves.easeOutBack,
+                    );
+              },
+            );
+          }
 
-              if (categories.isEmpty) {
-                return const Center(child: Text('لا توجد تصنيفات حالياً'));
-              }
-
-              return GridView.builder(
-                padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 24.h),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 14.h,
-                  crossAxisSpacing: 12.w,
-                  childAspectRatio: 0.82,
-                ),
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  final cat = categories[index];
-
-                  return _CategoryTile(
-                        category: cat,
-                        onTap: () => context.push(
-                          AppRoutes.storesList,
-                        ), // pass category info via extra later
-                      )
-                      .animate()
-                      .fadeIn(delay: (index * 30).ms, duration: 300.ms)
-                      .scale(
-                        begin: const Offset(0.92, 0.92),
-                        end: const Offset(1, 1),
-                        duration: 300.ms,
-                        curve: Curves.easeOutBack,
-                      );
-                },
-              );
-            }
-
-            return const SizedBox();
-          },
-        ),
+          return const SizedBox();
+        },
       ),
     );
   }
@@ -108,7 +105,7 @@ class _CategoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
@@ -130,7 +127,7 @@ class _CategoryTile extends StatelessWidget {
                 width: 60.w,
                 height: 60.w,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight.withValues(alpha: 0.4),
+                  color: context.primaryThemeColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(16.r),
                 ),
                 child: category.imageUrl.isNotEmpty
@@ -143,7 +140,7 @@ class _CategoryTile extends StatelessWidget {
                       )
                     : Icon(
                         Icons.category,
-                        color: AppColors.primary,
+                        color: context.primaryThemeColor,
                         size: 24.sp,
                       ),
               ),
@@ -152,7 +149,7 @@ class _CategoryTile extends StatelessWidget {
                 category.name,
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimaryColor,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 1,

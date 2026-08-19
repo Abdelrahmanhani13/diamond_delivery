@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_toast.dart';
@@ -49,7 +50,7 @@ class _LoginFormState extends State<_LoginForm> {
   String? get _passwordError =>
       _serverPasswordError ??
       (_submitted && _passwordController.text.isEmpty
-          ? 'يرجى إدخال كلمة المرور'
+          ? context.tr('password')
           : null);
 
   @override
@@ -71,103 +72,100 @@ class _LoginFormState extends State<_LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () => context.go(AppRoutes.onboarding),
-            icon: const Icon(Icons.arrow_back),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => context.go(AppRoutes.onboarding),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 18.sp,
+            color: context.textPrimaryColor,
           ),
         ),
-        backgroundColor: AppColors.scaffoldBackground,
-        body: SafeArea(
-          child: BlocListener<LoginCubit, LoginState>(
-            listener: (context, state) {
-              if (state is LoginSuccess) {
-                context.go(AppRoutes.home);
-              } else if (state is LoginError) {
-                setState(() {
-                  _serverPhoneError = null;
-                  _serverPasswordError = null;
-                });
+      ),
+      backgroundColor: context.scaffoldBackgroundColor,
+      body: SafeArea(
+        child: BlocListener<LoginCubit, LoginState>(
+          listener: (context, state) {
+            if (state is LoginSuccess) {
+              context.go(AppRoutes.home);
+            } else if (state is LoginError) {
+              setState(() {
+                _serverPhoneError = null;
+                _serverPasswordError = null;
+              });
 
-                bool hasFieldErrors = false;
+              bool hasFieldErrors = false;
 
-                // 1. Check for specific unverified phone error
-                if (state.errors?.any((e) => e.code == 'رقم الهاتف غير مؤكد') ??
-                    false) {
-                  AppToast.warning(
-                    context,
-                    message: 'برجاء تأكيد رقم الهاتف أولاً للمتابعة.',
-                    title: 'تأكيد الهاتف',
-                  );
-                  context.push(
-                    AppRoutes.otpVerification,
-                    extra: {'phoneNumber': _phoneController.text.trim()},
-                  );
-                  return; // Stop here, don't show generic message
-                }
+              if (state.errors?.any((e) => e.code == 'رقم الهاتف غير مؤكد') ??
+                  false) {
+                AppToast.warning(
+                  context,
+                  message: 'برجاء تأكيد رقم الهاتف أولاً للمتابعة.',
+                  title: 'تأكيد الهاتف',
+                );
+                context.push(
+                  AppRoutes.otpVerification,
+                  extra: {'phoneNumber': _phoneController.text.trim()},
+                );
+                return;
+              }
 
-                // 2. Map detailed field validation errors to the text fields
-                if (state.errors != null && state.errors!.isNotEmpty) {
-                  for (final error in state.errors!) {
-                    if (error.field == 'PhoneNumber') {
-                      setState(() => _serverPhoneError = error.message);
-                      hasFieldErrors = true;
-                    } else if (error.field == 'Password') {
-                      setState(() => _serverPasswordError = error.message);
-                      hasFieldErrors = true;
-                    }
+              if (state.errors != null && state.errors!.isNotEmpty) {
+                for (final error in state.errors!) {
+                  if (error.field == 'PhoneNumber') {
+                    setState(() => _serverPhoneError = error.message);
+                    hasFieldErrors = true;
+                  } else if (error.field == 'Password') {
+                    setState(() => _serverPasswordError = error.message);
+                    hasFieldErrors = true;
                   }
                 }
-
-                // 3. Fallback to snackbar if the errors couldn't be attached to fields
-                if (!hasFieldErrors) {
-                  AppToast.error(context, message: state.message);
-                }
               }
-            },
-            child: Center(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const AuthHeader(
-                          title: 'تسجيل الدخول',
-                          subtitle:
-                              'مرحباً بعودتك! سجّل الدخول لمتابعة تسوقك المفضل',
-                        )
-                        .animate()
-                        .fadeIn(duration: 400.ms)
-                        .slideY(
-                          begin: -0.15,
-                          end: 0,
-                          curve: Curves.easeOutCubic,
-                        ),
 
-                    Gap(28.h),
+              if (!hasFieldErrors) {
+                AppToast.error(context, message: state.message);
+              }
+            }
+          },
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AuthHeader(
+                    title: context.tr('login'),
+                    subtitle: context.tr('loginSubtitle'),
+                  )
+                      .animate()
+                      .fadeIn(duration: 400.ms)
+                      .slideY(
+                        begin: -0.15,
+                        end: 0,
+                        curve: Curves.easeOutCubic,
+                      ),
 
-                    LoginFormCard(
-                      phoneController: _phoneController,
-                      passwordController: _passwordController,
-                      phoneError: _phoneError,
-                      passwordError: _passwordError,
-                      obscure: _obscure,
-                      onPhoneChanged: (_) {
-                        setState(() => _serverPhoneError = null);
-                      },
-                      onPasswordChanged: (_) {
-                        setState(() => _serverPasswordError = null);
-                      },
-                      onObscureToggle: () {
-                        setState(() => _obscure = !_obscure);
-                      },
-                      onSubmit: _submit,
-                    ),
-                  ],
-                ),
+                  Gap(28.h),
+
+                  LoginFormCard(
+                    phoneController: _phoneController,
+                    passwordController: _passwordController,
+                    phoneError: _phoneError,
+                    passwordError: _passwordError,
+                    obscure: _obscure,
+                    onPhoneChanged: (_) {
+                      setState(() => _serverPhoneError = null);
+                    },
+                    onPasswordChanged: (_) {
+                      setState(() => _serverPasswordError = null);
+                    },
+                    onObscureToggle: () {
+                      setState(() => _obscure = !_obscure);
+                    },
+                    onSubmit: _submit,
+                  ),
+                ],
               ),
             ),
           ),

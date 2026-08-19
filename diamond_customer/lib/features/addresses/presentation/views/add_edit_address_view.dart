@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
@@ -198,66 +199,63 @@ class _AddEditAddressBodyState extends State<_AddEditAddressBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
-        appBar: CustomAppBar(
-          title: widget.isEditing ? 'تعديل العنوان' : 'عنوان توصيل جديد',
-        ),
-        body: ListView(
-          padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 24.h),
-          children: [
-            MapPickerPreview(
-              isLocationSelected: _selectedLat != null,
-              onTap: () => _openLocationPicker(context),
-            ),
-            SizedBox(height: 24.h),
-            AddressFormSection(
-              labelController: _labelController,
-              areaController: _areaController,
-              detailsController: _detailsController,
-              buildingController: _buildingController,
-            ),
-          ],
-        ),
-        bottomNavigationBar: SafeArea(
-          child: Container(
-            padding: EdgeInsets.all(16.w),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadow.withValues(alpha: 0.06),
-                  blurRadius: 16,
-                  offset: const Offset(0, -4),
-                ),
-              ],
-            ),
-            child: BlocConsumer<AddEditAddressCubit, AddEditAddressState>(
-              listener: (context, state) {
-                if (state is AddEditAddressSuccess) {
-                  context.pop(state.address);
-                } else if (state is AddEditAddressError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.message),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-              builder: (context, state) {
-                return AppButton(
-                  label: widget.isEditing
-                      ? 'حفظ تعديل العنوان'
-                      : 'تأكيد وإضافة العنوان',
-                  icon: Icons.check_rounded,
-                  isLoading: state is AddEditAddressLoading,
-                  onPressed: () => _onSubmit(context),
+    return Scaffold(
+      backgroundColor: context.scaffoldBackgroundColor,
+      appBar: CustomAppBar(
+        title: widget.isEditing ? context.tr('editAddress') : context.tr('addAddress'),
+      ),
+      body: ListView(
+        padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 24.h),
+        children: [
+          MapPickerPreview(
+            isLocationSelected: _selectedLat != null,
+            onTap: () => _openLocationPicker(context),
+          ),
+          SizedBox(height: 24.h),
+          AddressFormSection(
+            labelController: _labelController,
+            areaController: _areaController,
+            detailsController: _detailsController,
+            buildingController: _buildingController,
+          ),
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: context.surfaceColor,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadow.withValues(alpha: 0.06),
+                blurRadius: 16,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
+          child: BlocConsumer<AddEditAddressCubit, AddEditAddressState>(
+            listener: (context, state) {
+              if (state is AddEditAddressSuccess) {
+                context.pop(state.address);
+              } else if (state is AddEditAddressError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.red,
+                  ),
                 );
-              },
-            ),
+              }
+            },
+            builder: (context, state) {
+              return AppButton(
+                label: widget.isEditing
+                    ? context.tr('editAddress')
+                    : context.tr('confirm'),
+                icon: Icons.check_rounded,
+                isLoading: state is AddEditAddressLoading,
+                onPressed: () => _onSubmit(context),
+              );
+            },
           ),
         ),
       ),

@@ -1,17 +1,12 @@
 import 'package:diamond_customer/core/constants/app_radius.dart';
 import 'package:diamond_customer/core/constants/assets.dart';
+import 'package:diamond_customer/core/localization/app_localizations.dart';
 import 'package:diamond_customer/core/theme/app_colors.dart';
 import 'package:diamond_customer/core/theme/app_text_styles.dart';
 import 'package:diamond_customer/features/products/domain/entities/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// FIX: كان بياخد ProductItem (موديل شكلي وهمي بحقول subtitle/
-/// reviewsCount/deliveryTime/deliveryFee مش موجودة أصلاً في الداتا
-/// الحقيقية)، بينما كل استخدام له في التطبيق (home_view،
-/// product_details_view، favorites_view) بيبعتله Product (الـ domain
-/// entity الحقيقي القادم من الـ API) - ده type mismatch كان هيمنع
-/// الكود من الـ compile. اتصلح عشان ياخد Product ويعرض حقوله الفعلية.
 class ProductCard extends StatelessWidget {
   const ProductCard({super.key, required this.product, this.onTap});
 
@@ -23,6 +18,7 @@ class ProductCard extends StatelessWidget {
     final hasDiscount =
         product.discountPrice != null && product.discountPrice! < product.price;
     final displayPrice = product.discountPrice ?? product.price;
+    final currency = context.tr('currency');
 
     return InkWell(
       onTap: onTap,
@@ -31,11 +27,11 @@ class ProductCard extends StatelessWidget {
         opacity: product.isAvailable ? 1 : 0.5,
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: context.surfaceColor,
             borderRadius: BorderRadius.circular(AppRadius.lg),
             boxShadow: [
               BoxShadow(
-                color: AppColors.shadow,
+                color: AppColors.shadow.withValues(alpha: 0.05),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -50,7 +46,7 @@ class ProductCard extends StatelessWidget {
                   AspectRatio(
                     aspectRatio: 16 / 9,
                     child: Container(
-                      color: AppColors.greyLight,
+                      color: context.greyLightColor,
                       child: product.imageUrls.isNotEmpty
                           ? Image.network(
                               product.imageUrls.first,
@@ -72,7 +68,7 @@ class ProductCard extends StatelessWidget {
                       right: 10.w,
                       child: _Badge(
                         label:
-                            'خصم ${(100 - (product.discountPrice! / product.price * 100)).round()}%',
+                            '${(100 - (product.discountPrice! / product.price * 100)).round()}%',
                         color: AppColors.accent,
                       ),
                     ),
@@ -81,7 +77,7 @@ class ProductCard extends StatelessWidget {
                       top: 10.h,
                       left: 10.w,
                       child: _Badge(
-                        label: 'غير متاح',
+                        label: context.isArabic ? 'غير متاح' : 'Unavailable',
                         color: AppColors.textHint,
                       ),
                     ),
@@ -104,7 +100,7 @@ class ProductCard extends StatelessWidget {
                           product.rating.toStringAsFixed(1),
                           style: AppTextStyles.bodySmall.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                            color: context.textPrimaryColor,
                           ),
                         ),
                       ],
@@ -112,14 +108,18 @@ class ProductCard extends StatelessWidget {
                     SizedBox(height: 4.h),
                     Text(
                       product.name,
-                      style: AppTextStyles.headingSmall,
+                      style: AppTextStyles.headingSmall.copyWith(
+                        color: context.textPrimaryColor,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 2.h),
                     Text(
                       product.vendorName ?? '',
-                      style: AppTextStyles.bodySmall,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: context.textSecondaryColor,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -128,19 +128,19 @@ class ProductCard extends StatelessWidget {
                       children: [
                         if (hasDiscount) ...[
                           Text(
-                            '${product.price} ر.س',
+                            '${product.price} $currency',
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textHint,
+                              color: context.textSecondaryColor,
                               decoration: TextDecoration.lineThrough,
                             ),
                           ),
                           SizedBox(width: 6.w),
                         ],
                         Text(
-                          '$displayPrice ر.س',
+                          '$displayPrice $currency',
                           style: AppTextStyles.bodyMedium.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
+                            color: context.primaryThemeColor,
                           ),
                         ),
                       ],

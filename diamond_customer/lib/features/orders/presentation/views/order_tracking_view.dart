@@ -28,14 +28,12 @@ class OrderTrackingView extends StatelessWidget {
     //   activeIndex: activeStage,
     // );
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
-        appBar: CustomAppBar(
-          title: 'تتبع السائق والطلب #10234',
-          onBack: () => context.go(AppRoutes.orders),
-        ),
+    return Scaffold(
+      backgroundColor: context.scaffoldBackgroundColor,
+      appBar: CustomAppBar(
+        title: 'تتبع السائق والطلب #10234',
+        onBack: () => context.go(AppRoutes.orders),
+      ),
         body: ListView(
           padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 24.h),
           children: [
@@ -96,7 +94,6 @@ class OrderTrackingView extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

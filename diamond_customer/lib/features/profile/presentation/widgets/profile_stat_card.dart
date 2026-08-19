@@ -23,7 +23,7 @@ class ProfileStatCard extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 6.w),
         margin: EdgeInsets.symmetric(horizontal: 4.w),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: context.surfaceColor,
           borderRadius: BorderRadius.circular(AppRadius.md),
           boxShadow: [
             BoxShadow(
@@ -36,7 +36,7 @@ class ProfileStatCard extends StatelessWidget {
         child: Column(
           children: [
             if (icon != null) ...[
-              Icon(icon, size: 18.sp, color: AppColors.primary),
+              Icon(icon, size: 18.sp, color: context.primaryThemeColor),
               SizedBox(height: 4.h),
             ],
             FittedBox(
@@ -44,7 +44,7 @@ class ProfileStatCard extends StatelessWidget {
               child: Text(
                 value,
                 style: AppTextStyles.headingSmall.copyWith(
-                  color: AppColors.primary,
+                  color: context.primaryThemeColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -52,7 +52,12 @@ class ProfileStatCard extends StatelessWidget {
             SizedBox(height: 2.h),
             FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text(label, style: AppTextStyles.bodySmall),
+              child: Text(
+                label,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: context.textSecondaryColor,
+                ),
+              ),
             ),
           ],
         ),

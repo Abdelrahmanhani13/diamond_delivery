@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
-/// Consistent app bar used across secondary screens (Cart, Notifications,
-/// Search, Order Details, Settings, ...). Home screen uses its own custom
-/// header (see HomeHeader) since it isn't a plain title bar.
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     super.key,
@@ -25,20 +23,29 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: context.surfaceColor,
+      surfaceTintColor: context.surfaceColor,
       leading: showBack
           ? IconButton(
-              icon: const Icon(Icons.arrow_forward_ios_rounded, size: 18),
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 18.sp,
+                color: context.textPrimaryColor,
+              ),
               onPressed: onBack ?? () => Navigator.of(context).maybePop(),
             )
           : null,
-      title: Text(title, style: AppTextStyles.headingSmall),
+      title: Text(
+        title,
+        style: AppTextStyles.headingSmall.copyWith(
+          color: context.textPrimaryColor,
+        ),
+      ),
       actions: actions,
     );
   }
 }
 
-/// Section header used inside scrollable content, e.g. "التصنيفات" /
-/// "الأكثر طلباً" with an optional "عرض الكل" trailing action.
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
     super.key,
@@ -56,11 +63,21 @@ class SectionHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: AppTextStyles.headingSmall),
+        Text(
+          title,
+          style: AppTextStyles.headingSmall.copyWith(
+            color: context.textPrimaryColor,
+          ),
+        ),
         if (actionLabel != null)
           InkWell(
             onTap: onAction,
-            child: Text(actionLabel!, style: AppTextStyles.link),
+            child: Text(
+              actionLabel!,
+              style: AppTextStyles.link.copyWith(
+                color: context.primaryThemeColor,
+              ),
+            ),
           ),
       ],
     );

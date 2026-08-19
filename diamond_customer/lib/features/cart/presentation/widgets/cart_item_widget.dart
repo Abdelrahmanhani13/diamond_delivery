@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/constants/app_radius.dart';
@@ -23,10 +24,13 @@ class CartItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currency = context.tr('currency');
+    final name = context.localizedText(item.nameArabic, item.nameEnglish);
+
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: !item.isAvailable
             ? Border.all(color: AppColors.error.withValues(alpha: 0.4))
@@ -52,15 +56,15 @@ class CartItemWidget extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) => Container(
                       width: 72.w,
                       height: 72.w,
-                      color: AppColors.greyLight,
-                      child: const Icon(Icons.fastfood_rounded, color: AppColors.textSecondary),
+                      color: context.greyLightColor,
+                      child: Icon(Icons.fastfood_rounded, color: context.textSecondaryColor),
                     ),
                   )
                 : Container(
                     width: 72.w,
                     height: 72.w,
-                    color: AppColors.greyLight,
-                    child: const Icon(Icons.fastfood_rounded, color: AppColors.textSecondary),
+                    color: context.greyLightColor,
+                    child: Icon(Icons.fastfood_rounded, color: context.textSecondaryColor),
                   ),
           ),
 
@@ -71,9 +75,10 @@ class CartItemWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.nameArabic.isNotEmpty ? item.nameArabic : item.nameEnglish,
+                  name,
                   style: AppTextStyles.bodyLarge.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: context.textPrimaryColor,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -96,10 +101,11 @@ class CartItemWidget extends StatelessWidget {
                   ),
                 SizedBox(height: 6.h),
                 Text(
-                  '${item.unitPrice.toStringAsFixed(0)} ر.س  (الإجمالي: ${item.itemTotal.toStringAsFixed(0)} ر.س)',
+                  '${item.unitPrice.toStringAsFixed(0)} $currency  (${context.tr('total')}: ${item.itemTotal.toStringAsFixed(0)} $currency)',
                   style: AppTextStyles.price.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 13.sp,
+                    color: context.primaryThemeColor,
                   ),
                 ),
               ],
