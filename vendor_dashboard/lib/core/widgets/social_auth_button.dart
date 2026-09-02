@@ -22,8 +22,14 @@ class SocialAuthButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (icon, color) = switch (provider) {
-      SocialProvider.google => (Icons.g_mobiledata_rounded, const Color(0xFFDB4437)),
-      SocialProvider.facebook => (Icons.facebook_rounded, const Color(0xFF1877F2)),
+      SocialProvider.google => (
+        Icons.g_mobiledata_rounded,
+        const Color(0xFFDB4437),
+      ),
+      SocialProvider.facebook => (
+        Icons.facebook_rounded,
+        const Color(0xFF1877F2),
+      ),
     };
 
     return Material(
@@ -46,7 +52,9 @@ class SocialAuthButton extends StatelessWidget {
               SizedBox(width: 10.w),
               Text(
                 label,
-                style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textPrimary),
+                style: AppTextStyles.bodyLarge.copyWith(
+                  color: AppColors.textPrimary,
+                ),
               ),
             ],
           ),

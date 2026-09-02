@@ -1,16 +1,13 @@
-
-import '../../../../core/errors/failures.dart';
-import '../../../../core/utils/either.dart';
+import 'package:dartz/dartz.dart';
 import 'package:vendor_dashboard/core/errors/failures.dart';
-import 'package:vendor_dashboard/features/auth/domain/repositories/vendor_auth_repository.dart';
-import 'package:vendor_dashboard/features/auth/domain/usecases/vendor_logout_usecase.dart';
+import '../repositories/vendor_auth_repository.dart';
 
 class VendorLogoutUseCase {
-  final VendorAuthRepository _repository;
+  final VendorAuthRepository repository;
 
-  VendorLogoutUseCase(this._repository);
+  VendorLogoutUseCase(this.repository);
 
   Future<Either<Failure, void>> call(String refreshToken) {
-    return _repository.logout(refreshToken);
+    return repository.logout(refreshToken);
   }
 }

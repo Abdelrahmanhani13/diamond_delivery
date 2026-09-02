@@ -59,3 +59,24 @@ class _ShimmerBoxState extends State<ShimmerBox>
     );
   }
 }
+
+class ShimmerLoadingList extends StatelessWidget {
+  final int itemCount;
+
+  const ShimmerLoadingList({super.key, this.itemCount = 5});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      itemCount: itemCount,
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        return ShimmerBox(
+          width: double.infinity,
+          height: 100,
+          radius: AppRadius.md,
+        );
+      },
+    );
+  }
+}

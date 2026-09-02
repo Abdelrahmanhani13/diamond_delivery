@@ -1,16 +1,12 @@
-
-import '../../../../core/errors/failures.dart';
-import '../../../../core/utils/either.dart';
-import '../entities/auth_tokens.dart';
-import 'package:vendor_dashboard/features/auth/domain/entities/auth_tokens.dart';
+import 'package:dartz/dartz.dart';
 import 'package:vendor_dashboard/core/errors/failures.dart';
-import 'package:vendor_dashboard/features/auth/domain/repositories/vendor_auth_repository.dart';
-import 'package:vendor_dashboard/features/auth/domain/usecases/vendor_verify_otp_usecase.dart';
+import '../entities/auth_tokens.dart';
+import '../repositories/vendor_auth_repository.dart';
 
 class VendorVerifyOtpUseCase {
-  final VendorAuthRepository _repository;
+  final VendorAuthRepository repository;
 
-  VendorVerifyOtpUseCase(this._repository);
+  VendorVerifyOtpUseCase(this.repository);
 
   Future<Either<Failure, AuthTokens>> call(
     String phoneNumber,
@@ -18,6 +14,6 @@ class VendorVerifyOtpUseCase {
     String otpType,
     String deviceName,
   ) {
-    return _repository.verifyOtp(phoneNumber, code, otpType, deviceName);
+    return repository.verifyOtp(phoneNumber, code, otpType, deviceName);
   }
 }

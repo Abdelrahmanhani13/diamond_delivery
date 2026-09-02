@@ -1,8 +1,6 @@
-import 'package:vendor_dashboard/features/addresses/domain/entities/address_domain_entity.dart';
-
-import '../../../../core/errors/failures.dart';
-import '../../../../core/utils/either.dart';
+import 'package:dartz/dartz.dart';
 import 'package:vendor_dashboard/core/errors/failures.dart';
+import 'package:vendor_dashboard/features/addresses/domain/entities/address_domain_entity.dart';
 
 abstract class AddressRepository {
   Future<Either<Failure, List<Address>>> getAddresses();

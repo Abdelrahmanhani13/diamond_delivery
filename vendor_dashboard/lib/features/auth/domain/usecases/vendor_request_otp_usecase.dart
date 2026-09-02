@@ -1,17 +1,17 @@
-
-import '../../../../core/errors/failures.dart';
-import '../../../../core/utils/either.dart';
-import '../entities/request_otp_response.dart';
+import 'package:dartz/dartz.dart';
 import 'package:vendor_dashboard/core/errors/failures.dart';
-import 'package:vendor_dashboard/features/auth/domain/repositories/vendor_auth_repository.dart';
-import 'package:vendor_dashboard/features/auth/domain/usecases/vendor_request_otp_usecase.dart';
+import '../entities/request_otp_response.dart';
+import '../repositories/vendor_auth_repository.dart';
 
 class VendorRequestOtpUseCase {
-  final VendorAuthRepository _repository;
+  final VendorAuthRepository repository;
 
-  VendorRequestOtpUseCase(this._repository);
+  VendorRequestOtpUseCase(this.repository);
 
-  Future<Either<Failure, RequestOtpResponse>> call(String phoneNumber, String otpType) {
-    return _repository.requestOtp(phoneNumber, otpType);
+  Future<Either<Failure, RequestOtpResponse>> call(
+    String phoneNumber,
+    String otpType,
+  ) {
+    return repository.requestOtp(phoneNumber, otpType);
   }
 }

@@ -1,9 +1,7 @@
-// domain/repositories/vendor_product_repository.dart
 import 'dart:io';
 import 'package:dartz/dartz.dart';
-import '../../../../core/errors/failures.dart';
-import '../entities/vendor_product.dart';
 import 'package:vendor_dashboard/core/errors/failures.dart';
+import '../entities/vendor_product.dart';
 
 abstract class VendorProductRepository {
   Future<Either<Failure, ({List<VendorProduct> products, bool hasNextPage})>>
@@ -11,6 +9,9 @@ abstract class VendorProductRepository {
     required int page,
     required int pageSize,
     String? subCategoryId,
+    String? search,
+    bool? isAvailable,
+    int? sortBy,
   });
 
   Future<Either<Failure, VendorProduct>> getProductById(String id);
@@ -44,9 +45,6 @@ abstract class VendorProductRepository {
     double? weight,
   });
 
-  /// ملحوظة: مفيش endpoint حذف منتج في السواجر اللي اتبعت. الـ repository
-  /// مبني على افتراض DELETE /Vendor/products/{id} (نفس نمط الباقي).
-  /// لو عندك endpoint مختلف ابعتهولي وأظبط الـ data source.
   Future<Either<Failure, void>> deleteProduct(String id);
 
   Future<Either<Failure, VendorProduct>> changeAvailability({

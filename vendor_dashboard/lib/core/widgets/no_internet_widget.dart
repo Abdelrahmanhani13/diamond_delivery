@@ -28,10 +28,18 @@ class NoInternetView extends StatelessWidget {
                     color: AppColors.primaryLight,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.wifi_off_rounded, size: 50.sp, color: AppColors.primary),
+                  child: Icon(
+                    Icons.wifi_off_rounded,
+                    size: 50.sp,
+                    color: AppColors.primary,
+                  ),
                 ),
                 SizedBox(height: 24.h),
-                Text('لا يوجد اتصال بالإنترنت', style: AppTextStyles.headingMedium, textAlign: TextAlign.center),
+                Text(
+                  'لا يوجد اتصال بالإنترنت',
+                  style: AppTextStyles.headingMedium,
+                  textAlign: TextAlign.center,
+                ),
                 SizedBox(height: 8.h),
                 Text(
                   'يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى',
@@ -39,7 +47,11 @@ class NoInternetView extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 28.h),
-                AppButton(label: 'إعادة المحاولة', onPressed: onRetry, icon: Icons.refresh_rounded),
+                AppButton(
+                  label: 'إعادة المحاولة',
+                  onPressed: onRetry,
+                  icon: Icons.refresh_rounded,
+                ),
               ],
             ),
           ),

@@ -1,7 +1,5 @@
-import 'package:vendor_dashboard/features/auth/data/datasources/vendor_auth_local_data_source.dart';
-// presentation/cubit/auth/vendor_auth_cubit.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../data/datasources/vendor_auth_local_data_source.dart';
+import 'package:vendor_dashboard/features/auth/data/datasources/vendor_auth_local_data_source.dart';
 import 'vendor_auth_state.dart';
 
 class VendorAuthCubit extends Cubit<VendorAuthState> {
@@ -21,7 +19,7 @@ class VendorAuthCubit extends Cubit<VendorAuthState> {
   void loggedIn() => emit(VendorAuthenticated());
 
   Future<void> loggedOut() async {
-    await localDataSource.clearTokens();
+    await localDataSource.clearAll();
     emit(VendorUnauthenticated());
   }
 }

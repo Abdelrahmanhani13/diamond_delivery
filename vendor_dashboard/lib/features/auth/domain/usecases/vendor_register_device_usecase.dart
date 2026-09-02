@@ -1,14 +1,11 @@
-
-import '../../../../core/errors/failures.dart';
-import '../../../../core/utils/either.dart';
+import 'package:dartz/dartz.dart';
 import 'package:vendor_dashboard/core/errors/failures.dart';
-import 'package:vendor_dashboard/features/auth/domain/usecases/vendor_register_device_usecase.dart';
-import 'package:vendor_dashboard/features/auth/domain/repositories/vendor_auth_repository.dart';
+import '../repositories/vendor_auth_repository.dart';
 
 class VendorRegisterDeviceUseCase {
-  final VendorAuthRepository _repository;
+  final VendorAuthRepository repository;
 
-  VendorRegisterDeviceUseCase(this._repository);
+  VendorRegisterDeviceUseCase(this.repository);
 
   Future<Either<Failure, void>> call(
     String devicePlatform,
@@ -16,7 +13,7 @@ class VendorRegisterDeviceUseCase {
     String firebaseToken,
     String appVersion,
   ) {
-    return _repository.registerDevice(
+    return repository.registerDevice(
       devicePlatform,
       deviceId,
       firebaseToken,

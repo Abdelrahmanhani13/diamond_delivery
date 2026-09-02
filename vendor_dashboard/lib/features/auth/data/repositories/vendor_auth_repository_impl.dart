@@ -1,17 +1,13 @@
-
-import '../../../../core/errors/exceptions.dart';
-import '../../../../core/errors/failures.dart';
-import '../../../../core/network/network_info.dart';
-import '../../../../core/utils/either.dart';
+import 'package:dartz/dartz.dart';
+import 'package:vendor_dashboard/core/errors/exceptions.dart';
+import 'package:vendor_dashboard/core/errors/failures.dart';
+import 'package:vendor_dashboard/core/network/network_info.dart';
+import '../datasources/vendor_auth_local_data_source.dart';
+import '../datasources/vendor_auth_remote_data_source.dart';
 import '../../domain/entities/auth_tokens.dart';
 import '../../domain/entities/register_response.dart';
 import '../../domain/entities/request_otp_response.dart';
-import 'package:vendor_dashboard/features/auth/data/datasources/vendor_auth_remote_data_source.dart';
-import 'package:vendor_dashboard/core/errors/failures.dart';
-import 'package:vendor_dashboard/features/auth/domain/entities/auth_tokens.dart';
-import 'package:vendor_dashboard/features/auth/data/datasources/vendor_auth_local_data_source.dart';
-import 'package:vendor_dashboard/features/auth/domain/repositories/vendor_auth_repository.dart';
-import 'package:vendor_dashboard/core/errors/exceptions.dart';
+import '../../domain/repositories/vendor_auth_repository.dart';
 
 class AuthRepositoryImpl implements VendorAuthRepository {
   final VendorAuthRemoteDataSource _remoteDataSource;
@@ -22,9 +18,9 @@ class AuthRepositoryImpl implements VendorAuthRepository {
     required VendorAuthRemoteDataSource remoteDataSource,
     required VendorAuthLocalDataSource localDataSource,
     required NetworkInfo networkInfo,
-  })  : _remoteDataSource = remoteDataSource,
-        _localDataSource = localDataSource,
-        _networkInfo = networkInfo;
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource,
+       _networkInfo = networkInfo;
 
   @override
   Future<Either<Failure, AuthTokens>> login(
@@ -44,7 +40,6 @@ class AuthRepositoryImpl implements VendorAuthRepository {
         response.refreshToken,
         response.accessTokenExpiresAt,
       );
-      // Persist user data from auth response
       if (response.user != null) {
         await _localDataSource.saveUserData({
           'userId': response.user!.id,
@@ -55,13 +50,9 @@ class AuthRepositoryImpl implements VendorAuthRepository {
       }
       return Right(response.toTokensEntity());
     } on ServerException catch (e) {
-      return Left(ServerFailure(
-        message: e.message,
-        statusCode: e.statusCode,
-        errors: e.errors,
-      ));
-    } catch (_) {
-      return const Left(UnknownFailure());
+      return Left(ServerFailure.fromException(e));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -90,13 +81,9 @@ class AuthRepositoryImpl implements VendorAuthRepository {
       );
       return Right(response);
     } on ServerException catch (e) {
-      return Left(ServerFailure(
-        message: e.message,
-        statusCode: e.statusCode,
-        errors: e.errors,
-      ));
-    } catch (_) {
-      return const Left(UnknownFailure());
+      return Left(ServerFailure.fromException(e));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -110,13 +97,9 @@ class AuthRepositoryImpl implements VendorAuthRepository {
       final response = await _remoteDataSource.requestOtp(phoneNumber, otpType);
       return Right(response);
     } on ServerException catch (e) {
-      return Left(ServerFailure(
-        message: e.message,
-        statusCode: e.statusCode,
-        errors: e.errors,
-      ));
-    } catch (_) {
-      return const Left(UnknownFailure());
+      return Left(ServerFailure.fromException(e));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -140,7 +123,6 @@ class AuthRepositoryImpl implements VendorAuthRepository {
         response.refreshToken,
         response.accessTokenExpiresAt,
       );
-      // Persist user data from OTP verification response
       if (response.user != null) {
         await _localDataSource.saveUserData({
           'userId': response.user!.id,
@@ -151,13 +133,9 @@ class AuthRepositoryImpl implements VendorAuthRepository {
       }
       return Right(response.toTokensEntity());
     } on ServerException catch (e) {
-      return Left(ServerFailure(
-        message: e.message,
-        statusCode: e.statusCode,
-        errors: e.errors,
-      ));
-    } catch (_) {
-      return const Left(UnknownFailure());
+      return Left(ServerFailure.fromException(e));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -186,13 +164,9 @@ class AuthRepositoryImpl implements VendorAuthRepository {
       await _remoteDataSource.resetPassword(phoneNumber, code, newPassword);
       return const Right(null);
     } on ServerException catch (e) {
-      return Left(ServerFailure(
-        message: e.message,
-        statusCode: e.statusCode,
-        errors: e.errors,
-      ));
-    } catch (_) {
-      return const Left(UnknownFailure());
+      return Left(ServerFailure.fromException(e));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -213,13 +187,9 @@ class AuthRepositoryImpl implements VendorAuthRepository {
       );
       return const Right(null);
     } on ServerException catch (e) {
-      return Left(ServerFailure(
-        message: e.message,
-        statusCode: e.statusCode,
-        errors: e.errors,
-      ));
-    } catch (_) {
-      return const Left(UnknownFailure());
+      return Left(ServerFailure.fromException(e));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

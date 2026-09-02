@@ -1,12 +1,11 @@
-// domain/usecases/update_vendor_product_usecase.dart
 import 'package:dartz/dartz.dart';
-import '../../../../core/errors/failures.dart';
+import 'package:vendor_dashboard/core/errors/failures.dart';
 import '../entities/vendor_product.dart';
 import '../repositories/vendor_product_repository.dart';
-import 'package:vendor_dashboard/core/errors/failures.dart';
 
 class UpdateVendorProductUseCase {
   final VendorProductRepository repository;
+
   UpdateVendorProductUseCase(this.repository);
 
   Future<Either<Failure, VendorProduct>> call({

@@ -27,6 +27,11 @@ class VendorTextStyles {
   static TextStyle headingMedium = _base(size: 18, weight: FontWeight.w700);
   static TextStyle headingSmall = _base(size: 16, weight: FontWeight.w600);
 
+  // Title Aliases for compatibility
+  static TextStyle titleLarge = headingLarge;
+  static TextStyle titleMedium = headingMedium;
+  static TextStyle titleSmall = headingSmall;
+
   // Body
   static TextStyle bodyLarge = _base(size: 15, weight: FontWeight.w500);
   static TextStyle bodyMedium = _base(size: 14, weight: FontWeight.w400);

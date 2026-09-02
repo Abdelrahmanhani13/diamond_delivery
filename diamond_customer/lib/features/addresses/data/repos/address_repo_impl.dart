@@ -40,6 +40,7 @@ class AddressRepositoryImpl implements AddressRepository {
         ),
       );
     } on NetworkException catch (e) {
+      // ioexception
       // Was previously falling through to the generic catch below and
       // losing this message — request started fine but the connection
       // dropped mid-flight (different from the isConnected pre-check above).

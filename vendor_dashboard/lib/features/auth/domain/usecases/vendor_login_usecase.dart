@@ -1,18 +1,18 @@
-
-import '../../../../core/errors/failures.dart';
-import '../../../../core/utils/either.dart';
-import '../entities/auth_tokens.dart';
-import 'package:vendor_dashboard/features/auth/domain/entities/auth_tokens.dart';
-import 'package:vendor_dashboard/features/auth/domain/usecases/vendor_login_usecase.dart';
+import 'package:dartz/dartz.dart';
 import 'package:vendor_dashboard/core/errors/failures.dart';
-import 'package:vendor_dashboard/features/auth/domain/repositories/vendor_auth_repository.dart';
+import '../entities/auth_tokens.dart';
+import '../repositories/vendor_auth_repository.dart';
 
 class VendorLoginUseCase {
-  final VendorAuthRepository _repository;
+  final VendorAuthRepository repository;
 
-  VendorLoginUseCase(this._repository);
+  VendorLoginUseCase(this.repository);
 
-  Future<Either<Failure, AuthTokens>> call(String phoneNumber, String password, String deviceName) {
-    return _repository.login(phoneNumber, password, deviceName);
+  Future<Either<Failure, AuthTokens>> call(
+    String phoneNumber,
+    String password,
+    String deviceName,
+  ) {
+    return repository.login(phoneNumber, password, deviceName);
   }
 }

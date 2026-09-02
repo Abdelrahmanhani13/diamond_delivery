@@ -41,7 +41,9 @@ class VendorTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: VendorColors.primary,
-          textStyle: VendorTextStyles.buttonMedium.copyWith(color: VendorColors.primary),
+          textStyle: VendorTextStyles.buttonMedium.copyWith(
+            color: VendorColors.primary,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -52,7 +54,10 @@ class VendorTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: VendorColors.greyLight,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
@@ -69,14 +74,14 @@ class VendorTheme {
           borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: VendorColors.error),
         ),
-        labelStyle: VendorTextStyles.bodyMedium.copyWith(color: VendorColors.textHint),
+        labelStyle: VendorTextStyles.bodyMedium.copyWith(
+          color: VendorColors.textHint,
+        ),
         hintStyle: VendorTextStyles.bodySmall,
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         color: VendorColors.surface,
       ),
       dividerTheme: const DividerThemeData(

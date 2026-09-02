@@ -1,7 +1,5 @@
 import '../../domain/entities/auth_tokens.dart';
 import 'user_model.dart';
-import 'package:vendor_dashboard/features/auth/domain/entities/auth_tokens.dart';
-import 'package:vendor_dashboard/features/auth/data/models/auth_response_model.dart';
 
 class AuthResponseModel {
   final String accessToken;

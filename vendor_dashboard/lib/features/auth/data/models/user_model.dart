@@ -15,7 +15,11 @@ class UserModel extends User {
       name: json['fullName'] ?? '',
       email: json['email'] ?? '',
       phone: json['phoneNumber'] ?? '',
-      roles: (json['roles'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      roles:
+          (json['roles'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
     );
   }
 

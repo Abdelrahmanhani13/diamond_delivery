@@ -1,26 +1,24 @@
-
-import '../../../../core/errors/failures.dart';
-import '../../../../core/utils/either.dart';
-import '../entities/register_response.dart';
+import 'package:dartz/dartz.dart';
 import 'package:vendor_dashboard/core/errors/failures.dart';
-import 'package:vendor_dashboard/features/auth/domain/repositories/vendor_auth_repository.dart';
+import '../entities/register_response.dart';
+import '../repositories/vendor_auth_repository.dart';
 
 class VendorRegisterUseCase {
-  final VendorAuthRepository _repository;
+  final VendorAuthRepository repository;
 
-  VendorRegisterUseCase(this._repository);
+  VendorRegisterUseCase(this.repository);
 
-  Future<Either<Failure, RegisterResponse>> call(
-    String firstName,
-    String lastName,
-    String phoneNumber,
-    String email,
-    String password,
-    String roleName,
+  Future<Either<Failure, RegisterResponse>> call({
+    required String firstName,
+    required String lastName,
+    required String phoneNumber,
+    required String email,
+    required String password,
+    required String roleName,
     String? genderId,
     String? dateOfBirth,
-  ) {
-    return _repository.register(
+  }) {
+    return repository.register(
       firstName,
       lastName,
       phoneNumber,

@@ -8,6 +8,9 @@ import 'package:vendor_dashboard/features/products/presentation/controller/vendo
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
 import '../../domain/entities/vendor_product.dart';
+import '../widgets/product_basic_info_section.dart';
+import '../widgets/product_image_gallery_section.dart';
+import '../widgets/product_pricing_inventory_section.dart';
 
 class VendorAddEditProductPage extends StatefulWidget {
   final VendorProduct? product;
@@ -19,7 +22,6 @@ class VendorAddEditProductPage extends StatefulWidget {
 }
 
 class _VendorAddEditProductPageState extends State<VendorAddEditProductPage> {
-  // ==== الحقول المطلوبة فعليًا من الـ API ====
   late TextEditingController _subCategoryIdController;
   late TextEditingController _nameArabicController;
   late TextEditingController _nameEnglishController;
@@ -27,7 +29,6 @@ class _VendorAddEditProductPageState extends State<VendorAddEditProductPage> {
   late TextEditingController _descriptionEnglishController;
   late TextEditingController _priceController;
 
-  // ==== حقول اختيارية ====
   late TextEditingController _discountPriceController;
   late TextEditingController _stockQuantityController;
   late TextEditingController _skuController;
@@ -36,9 +37,6 @@ class _VendorAddEditProductPageState extends State<VendorAddEditProductPage> {
 
   final _formKey = GlobalKey<FormState>();
   final _imagePicker = ImagePicker();
-
-  /// نسخة محلية قابلة للتعديل من صور المنتج، عشان تتحدّث لايف بعد
-  /// الرفع/الحذف/تعيين الرئيسية من غير ما نستنى إعادة تحميل الصفحة.
   late List<VendorProductImage> _images;
 
   bool get isEditing => widget.product != null;
@@ -81,6 +79,125 @@ class _VendorAddEditProductPageState extends State<VendorAddEditProductPage> {
     );
 
     _images = List.of(product?.images ?? const []);
+  }
+
+  @override
+  void dispose() {
+    _subCategoryIdController.dispose();
+    _nameArabicController.dispose();
+    _nameEnglishController.dispose();
+    _descriptionArabicController.dispose();
+    _descriptionEnglishController.dispose();
+    _priceController.dispose();
+    _discountPriceController.dispose();
+    _stockQuantityController.dispose();
+    _skuController.dispose();
+    _barcodeController.dispose();
+    _weightController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onAddImage() async {
+    final pickedFile = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile == null || widget.product == null) return;
+
+    if (!mounted) return;
+    context.read<VendorProductFormCubit>().uploadImage(
+      productId: widget.product!.id,
+      imageFile: File(pickedFile.path),
+    );
+  }
+
+  Future<void> _onDeleteImage(VendorProductImage image) async {
+    if (widget.product == null) return;
+    final cubit = context.read<VendorProductFormCubit>();
+    await cubit.deleteImage(productId: widget.product!.id, imageId: image.id);
+    setState(() {
+      _images.removeWhere((img) => img.id == image.id);
+    });
+  }
+
+  Future<void> _onSetPrimaryImage(VendorProductImage image) async {
+    if (widget.product == null) return;
+    final cubit = context.read<VendorProductFormCubit>();
+    await cubit.setPrimaryImage(
+      productId: widget.product!.id,
+      imageId: image.id,
+    );
+    setState(() {
+      _images = _images
+          .map(
+            (img) => VendorProductImage(
+              id: img.id,
+              url: img.url,
+              isPrimary: img.id == image.id,
+            ),
+          )
+          .toList();
+    });
+  }
+
+  void _onSave() {
+    if (!_formKey.currentState!.validate()) return;
+
+    final price = double.parse(_priceController.text.trim());
+    final discountStr = _discountPriceController.text.trim();
+    final discountPrice = discountStr.isNotEmpty
+        ? double.tryParse(discountStr)
+        : null;
+    final stock = int.tryParse(_stockQuantityController.text.trim()) ?? 0;
+    final weightStr = _weightController.text.trim();
+    final weight = weightStr.isNotEmpty ? double.tryParse(weightStr) : null;
+
+    final cubit = context.read<VendorProductFormCubit>();
+    if (isEditing) {
+      cubit.updateProduct(
+        id: widget.product!.id,
+        subCategoryId: _subCategoryIdController.text.trim(),
+        nameArabic: _nameArabicController.text.trim(),
+        nameEnglish: _nameEnglishController.text.trim(),
+        descriptionArabic: _descriptionArabicController.text.trim().isNotEmpty
+            ? _descriptionArabicController.text.trim()
+            : null,
+        descriptionEnglish: _descriptionEnglishController.text.trim().isNotEmpty
+            ? _descriptionEnglishController.text.trim()
+            : null,
+        price: price,
+        discountPrice: discountPrice,
+        stockQuantity: stock,
+        sku: _skuController.text.trim().isNotEmpty
+            ? _skuController.text.trim()
+            : null,
+        barcode: _barcodeController.text.trim().isNotEmpty
+            ? _barcodeController.text.trim()
+            : null,
+        weight: weight,
+      );
+    } else {
+      cubit.createProduct(
+        subCategoryId: _subCategoryIdController.text.trim(),
+        nameArabic: _nameArabicController.text.trim(),
+        nameEnglish: _nameEnglishController.text.trim(),
+        descriptionArabic: _descriptionArabicController.text.trim().isNotEmpty
+            ? _descriptionArabicController.text.trim()
+            : null,
+        descriptionEnglish: _descriptionEnglishController.text.trim().isNotEmpty
+            ? _descriptionEnglishController.text.trim()
+            : null,
+        price: price,
+        discountPrice: discountPrice,
+        stockQuantity: stock,
+        sku: _skuController.text.trim().isNotEmpty
+            ? _skuController.text.trim()
+            : null,
+        barcode: _barcodeController.text.trim().isNotEmpty
+            ? _barcodeController.text.trim()
+            : null,
+        weight: weight,
+      );
+    }
   }
 
   @override
@@ -143,6 +260,8 @@ class _VendorAddEditProductPageState extends State<VendorAddEditProductPage> {
             }
           },
           builder: (context, state) {
+            final isLoading = state is VendorProductFormSubmitting;
+
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Form(
@@ -150,518 +269,66 @@ class _VendorAddEditProductPageState extends State<VendorAddEditProductPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _sectionCard(
-                      title: 'معلومات المنتج الأساسية',
-                      children: [
-                        TextFormField(
-                          controller: _subCategoryIdController,
-                          decoration: const InputDecoration(
-                            labelText: 'رقم القسم الفرعي (subCategoryId)',
-                            prefixIcon: Icon(Icons.category_outlined),
-                            // TODO: استبدال الحقل ده بـ Dropdown حقيقي لما
-                            // تبعتلي endpoint الـ subcategories.
-                            helperText:
-                                'مؤقتًا: الصق الـ GUID لحد ما نعمل قايمة اختيار',
-                          ),
-                          validator: (v) => v == null || v.trim().isEmpty
-                              ? 'يرجى إدخال رقم القسم الفرعي'
-                              : null,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _nameArabicController,
-                          decoration: const InputDecoration(
-                            labelText: 'اسم المنتج (عربي)',
-                            prefixIcon: Icon(Icons.diamond_outlined),
-                          ),
-                          validator: (v) => v == null || v.trim().isEmpty
-                              ? 'يرجى إدخال اسم المنتج بالعربي'
-                              : null,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _nameEnglishController,
-                          decoration: const InputDecoration(
-                            labelText: 'اسم المنتج (إنجليزي)',
-                            prefixIcon: Icon(Icons.diamond_outlined),
-                          ),
-                          validator: (v) => v == null || v.trim().isEmpty
-                              ? 'يرجى إدخال اسم المنتج بالإنجليزي'
-                              : null,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _descriptionArabicController,
-                          decoration: const InputDecoration(
-                            labelText: 'وصف المنتج (عربي)',
-                            prefixIcon: Icon(Icons.description_outlined),
-                          ),
-                          maxLines: 3,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _descriptionEnglishController,
-                          decoration: const InputDecoration(
-                            labelText: 'وصف المنتج (إنجليزي)',
-                            prefixIcon: Icon(Icons.description_outlined),
-                          ),
-                          maxLines: 3,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _priceController,
-                          decoration: const InputDecoration(
-                            labelText: 'السعر',
-                            prefixIcon: Icon(Icons.attach_money_rounded),
-                          ),
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          validator: (v) {
-                            if (v == null || v.trim().isEmpty) {
-                              return 'يرجى إدخال السعر';
-                            }
-                            if (double.tryParse(v.trim()) == null) {
-                              return 'يرجى إدخال رقم صحيح';
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
+                    ProductBasicInfoSection(
+                      subCategoryIdController: _subCategoryIdController,
+                      nameArabicController: _nameArabicController,
+                      nameEnglishController: _nameEnglishController,
+                      descriptionArabicController: _descriptionArabicController,
+                      descriptionEnglishController:
+                          _descriptionEnglishController,
+                      priceController: _priceController,
                     ),
-
                     const SizedBox(height: 16),
-
-                    _sectionCard(
-                      title: 'تفاصيل إضافية (اختياري)',
-                      children: [
-                        TextFormField(
-                          controller: _discountPriceController,
-                          decoration: const InputDecoration(
-                            labelText: 'سعر الخصم',
-                            prefixIcon: Icon(Icons.discount_outlined),
-                          ),
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _stockQuantityController,
-                          decoration: const InputDecoration(
-                            labelText: 'الكمية المتاحة',
-                            prefixIcon: Icon(Icons.inventory_2_outlined),
-                          ),
-                          keyboardType: TextInputType.number,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _skuController,
-                          decoration: const InputDecoration(
-                            labelText: 'SKU',
-                            prefixIcon: Icon(Icons.qr_code_outlined),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _barcodeController,
-                          decoration: const InputDecoration(
-                            labelText: 'الباركود',
-                            prefixIcon: Icon(Icons.barcode_reader),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _weightController,
-                          decoration: const InputDecoration(
-                            labelText: 'الوزن',
-                            prefixIcon: Icon(Icons.scale_outlined),
-                          ),
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                        ),
-                      ],
+                    ProductPricingInventorySection(
+                      discountPriceController: _discountPriceController,
+                      stockQuantityController: _stockQuantityController,
+                      skuController: _skuController,
+                      barcodeController: _barcodeController,
+                      weightController: _weightController,
                     ),
-
-                    const SizedBox(height: 16),
-
-                    // Image Management Section (only for editing)
-                    if (isEditing)
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: VendorColors.surface,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: [
-                            BoxShadow(
-                              color: VendorColors.shadow,
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'صور المنتج',
-                                  style: VendorTextStyles.headingSmall,
-                                ),
-                                OutlinedButton.icon(
-                                  onPressed:
-                                      state is VendorProductImageUploading
-                                      ? null
-                                      : _onAddImage,
-                                  icon: const Icon(
-                                    Icons.add_photo_alternate_outlined,
-                                    size: 18,
-                                  ),
-                                  label: const Text('إضافة صورة'),
-                                  style: OutlinedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            if (state is VendorProductImageUploading)
-                              const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 12),
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    color: VendorColors.primary,
-                                    strokeWidth: 2,
-                                  ),
-                                ),
-                              )
-                            else if (_images.isEmpty)
-                              Container(
-                                height: 120,
-                                decoration: BoxDecoration(
-                                  color: VendorColors.greyLight,
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(
-                                    color: VendorColors.border,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(
-                                        Icons.image_outlined,
-                                        size: 40,
-                                        color: VendorColors.grey,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'لا توجد صور',
-                                        style: VendorTextStyles.bodySmall,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            else
-                              SizedBox(
-                                height: 120,
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: _images.length,
-                                  separatorBuilder: (_, _) =>
-                                      const SizedBox(width: 8),
-                                  itemBuilder: (context, index) {
-                                    final image = _images[index];
-                                    return Stack(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            14,
-                                          ),
-                                          child: Image.network(
-                                            image.url,
-                                            width: 120,
-                                            height: 120,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (_, _, _) =>
-                                                Container(
-                                                  width: 120,
-                                                  height: 120,
-                                                  color: VendorColors.greyLight,
-                                                  child: const Icon(
-                                                    Icons.broken_image_outlined,
-                                                  ),
-                                                ),
-                                          ),
-                                        ),
-                                        if (image.isPrimary)
-                                          Positioned(
-                                            top: 4,
-                                            right: 4,
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 6,
-                                                    vertical: 2,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: VendorColors.primary,
-                                                borderRadius:
-                                                    BorderRadius.circular(999),
-                                              ),
-                                              child: Text(
-                                                'رئيسية',
-                                                style: VendorTextStyles.caption
-                                                    .copyWith(
-                                                      color: VendorColors.white,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                              ),
-                                            ),
-                                          ),
-                                        Positioned(
-                                          bottom: 4,
-                                          left: 4,
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              if (!image.isPrimary)
-                                                _ImageActionButton(
-                                                  icon: Icons
-                                                      .star_outline_rounded,
-                                                  color: VendorColors.accent,
-                                                  onTap: () =>
-                                                      _onSetPrimaryImage(image),
-                                                ),
-                                              const SizedBox(width: 4),
-                                              _ImageActionButton(
-                                                icon: Icons
-                                                    .delete_outline_rounded,
-                                                color: VendorColors.error,
-                                                onTap: () =>
-                                                    _onDeleteImage(image),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ),
-                          ],
-                        ),
+                    if (isEditing) ...[
+                      const SizedBox(height: 16),
+                      ProductImageGallerySection(
+                        images: _images,
+                        isUploading: state is VendorProductImageUploading,
+                        onAddImage: _onAddImage,
+                        onSetPrimary: _onSetPrimaryImage,
+                        onDeleteImage: _onDeleteImage,
                       ),
-
-                    const SizedBox(height: 32),
-
-                    // Submit Button
+                    ],
+                    const SizedBox(height: 24),
                     SizedBox(
                       height: 52,
-                      child: state is VendorProductFormLoading
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                color: VendorColors.primary,
-                              ),
-                            )
-                          : ElevatedButton(
-                              onPressed: _onSubmit,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: VendorColors.primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : _onSave,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: VendorColors.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
                                 ),
-                              ),
-                              child: Text(
+                              )
+                            : Text(
                                 isEditing ? 'حفظ التعديلات' : 'إضافة المنتج',
                                 style: VendorTextStyles.buttonLarge,
                               ),
-                            ),
+                      ),
                     ),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
             );
           },
         ),
-      ),
-    );
-  }
-
-  Widget _sectionCard({required String title, required List<Widget> children}) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: VendorColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: VendorColors.shadow,
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: VendorTextStyles.headingSmall),
-          const SizedBox(height: 16),
-          ...children,
-        ],
-      ),
-    );
-  }
-
-  Future<void> _onAddImage() async {
-    final picked = await _imagePicker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-    );
-    if (picked == null || !mounted) return;
-
-    context.read<VendorProductFormCubit>().uploadImage(
-      widget.product!.id,
-      File(picked.path),
-    );
-  }
-
-  void _onDeleteImage(VendorProductImage image) {
-    setState(() => _images = _images.where((i) => i.id != image.id).toList());
-    context.read<VendorProductFormCubit>().deleteImage(
-      widget.product!.id,
-      image.id,
-    );
-  }
-
-  void _onSetPrimaryImage(VendorProductImage image) {
-    setState(() {
-      _images = _images
-          .map(
-            (i) => i.id == image.id
-                ? VendorProductImage(
-                    id: i.id,
-                    url: i.url,
-                    isPrimary: true,
-                    displayOrder: i.displayOrder,
-                    createdAt: i.createdAt,
-                  )
-                : VendorProductImage(
-                    id: i.id,
-                    url: i.url,
-                    isPrimary: false,
-                    displayOrder: i.displayOrder,
-                    createdAt: i.createdAt,
-                  ),
-          )
-          .toList();
-    });
-    context.read<VendorProductFormCubit>().setPrimaryImage(
-      widget.product!.id,
-      image.id,
-    );
-  }
-
-  void _onSubmit() {
-    if (!_formKey.currentState!.validate()) return;
-
-    final cubit = context.read<VendorProductFormCubit>();
-    final subCategoryId = _subCategoryIdController.text.trim();
-    final nameArabic = _nameArabicController.text.trim();
-    final nameEnglish = _nameEnglishController.text.trim();
-    final descriptionArabic = _descriptionArabicController.text.trim();
-    final descriptionEnglish = _descriptionEnglishController.text.trim();
-    final price = double.parse(_priceController.text.trim());
-    final discountPrice = double.tryParse(_discountPriceController.text.trim());
-    final stockQuantity =
-        int.tryParse(_stockQuantityController.text.trim()) ?? 0;
-    final sku = _skuController.text.trim();
-    final barcode = _barcodeController.text.trim();
-    final weight = double.tryParse(_weightController.text.trim());
-
-    if (isEditing) {
-      cubit.updateProduct(
-        id: widget.product!.id,
-        subCategoryId: subCategoryId,
-        nameArabic: nameArabic,
-        nameEnglish: nameEnglish,
-        descriptionArabic: descriptionArabic.isEmpty ? null : descriptionArabic,
-        descriptionEnglish: descriptionEnglish.isEmpty
-            ? null
-            : descriptionEnglish,
-        price: price,
-        discountPrice: discountPrice,
-        stockQuantity: stockQuantity,
-        sku: sku.isEmpty ? null : sku,
-        barcode: barcode.isEmpty ? null : barcode,
-        weight: weight,
-      );
-    } else {
-      cubit.addProduct(
-        subCategoryId: subCategoryId,
-        nameArabic: nameArabic,
-        nameEnglish: nameEnglish,
-        descriptionArabic: descriptionArabic.isEmpty ? null : descriptionArabic,
-        descriptionEnglish: descriptionEnglish.isEmpty
-            ? null
-            : descriptionEnglish,
-        price: price,
-        discountPrice: discountPrice,
-        stockQuantity: stockQuantity,
-        sku: sku.isEmpty ? null : sku,
-        barcode: barcode.isEmpty ? null : barcode,
-        weight: weight,
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _subCategoryIdController.dispose();
-    _nameArabicController.dispose();
-    _nameEnglishController.dispose();
-    _descriptionArabicController.dispose();
-    _descriptionEnglishController.dispose();
-    _priceController.dispose();
-    _discountPriceController.dispose();
-    _stockQuantityController.dispose();
-    _skuController.dispose();
-    _barcodeController.dispose();
-    _weightController.dispose();
-    super.dispose();
-  }
-}
-
-class _ImageActionButton extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _ImageActionButton({
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: VendorColors.white.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, size: 18, color: color),
       ),
     );
   }

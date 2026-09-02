@@ -1,5 +1,4 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:vendor_dashboard/core/cache/secure_storage_service.dart';
 
 abstract class SecureStorageService {
   Future<void> write(String key, String value);

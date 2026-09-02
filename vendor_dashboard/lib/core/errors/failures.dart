@@ -1,9 +1,5 @@
-import 'package:vendor_dashboard/core/api/api_response.dart';
-
+import 'package:vendor_dashboard/core/api/api_error.dart';
 import 'exceptions.dart';
-import 'package:vendor_dashboard/core/api/api_client.dart';
-import 'package:vendor_dashboard/core/errors/failures.dart';
-import 'package:vendor_dashboard/core/errors/exceptions.dart';
 
 abstract class Failure {
   final String errMessage;

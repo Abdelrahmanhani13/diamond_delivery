@@ -1,4 +1,3 @@
-// presentation/controller/product_form_cubit/vendor_product_form_state.dart
 import '../../../domain/entities/vendor_product.dart';
 
 abstract class VendorProductFormState {}
@@ -6,6 +5,8 @@ abstract class VendorProductFormState {}
 class VendorProductFormInitial extends VendorProductFormState {}
 
 class VendorProductFormLoading extends VendorProductFormState {}
+
+typedef VendorProductFormSubmitting = VendorProductFormLoading;
 
 class VendorProductFormSuccess extends VendorProductFormState {
   final VendorProduct product;

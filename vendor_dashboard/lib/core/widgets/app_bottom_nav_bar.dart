@@ -16,10 +16,26 @@ class AppBottomNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   static const _items = [
-    _NavItemData(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'شخصي'),
-    _NavItemData(icon: Icons.receipt_long_outlined, activeIcon: Icons.receipt_long_rounded, label: 'طلباتي'),
-    _NavItemData(icon: Icons.search_rounded, activeIcon: Icons.search_rounded, label: 'ابحث'),
-    _NavItemData(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'الرئيسية'),
+    _NavItemData(
+      icon: Icons.person_outline_rounded,
+      activeIcon: Icons.person_rounded,
+      label: 'شخصي',
+    ),
+    _NavItemData(
+      icon: Icons.receipt_long_outlined,
+      activeIcon: Icons.receipt_long_rounded,
+      label: 'طلباتي',
+    ),
+    _NavItemData(
+      icon: Icons.search_rounded,
+      activeIcon: Icons.search_rounded,
+      label: 'ابحث',
+    ),
+    _NavItemData(
+      icon: Icons.home_outlined,
+      activeIcon: Icons.home_rounded,
+      label: 'الرئيسية',
+    ),
   ];
 
   @override
@@ -99,13 +115,17 @@ class _NavTile extends StatelessWidget {
             Icon(
               selected ? item.activeIcon : item.icon,
               size: 22.sp,
-              color: selected ? AppColors.textOnPrimary : AppColors.textSecondary,
+              color: selected
+                  ? AppColors.textOnPrimary
+                  : AppColors.textSecondary,
             ),
             if (!selected) ...[
               SizedBox(height: 4.h),
               Text(
                 item.label,
-                style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ],

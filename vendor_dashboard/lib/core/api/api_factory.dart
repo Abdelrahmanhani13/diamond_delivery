@@ -6,8 +6,7 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../cache/secure_storage_service.dart';
 import '../network/auth_event_bus.dart';
-import 'package:vendor_dashboard/core/cache/secure_storage_service.dart';
-import 'package:vendor_dashboard/core/network/auth_event_bus.dart';
+import 'api_constants.dart';
 
 class _RefreshTokenResult {
   final String accessToken;

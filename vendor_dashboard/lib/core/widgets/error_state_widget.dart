@@ -39,12 +39,25 @@ class ErrorStateWidget extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20.h),
-            Text(title, style: AppTextStyles.headingSmall, textAlign: TextAlign.center),
+            Text(
+              title,
+              style: AppTextStyles.headingSmall,
+              textAlign: TextAlign.center,
+            ),
             SizedBox(height: 6.h),
-            Text(message, style: AppTextStyles.bodySmall, textAlign: TextAlign.center),
+            Text(
+              message,
+              style: AppTextStyles.bodySmall,
+              textAlign: TextAlign.center,
+            ),
             if (onRetry != null) ...[
               SizedBox(height: 24.h),
-              AppButton(label: 'إعادة المحاولة', onPressed: onRetry, fullWidth: false, icon: Icons.refresh_rounded),
+              AppButton(
+                label: 'إعادة المحاولة',
+                onPressed: onRetry,
+                fullWidth: false,
+                icon: Icons.refresh_rounded,
+              ),
             ],
           ],
         ),

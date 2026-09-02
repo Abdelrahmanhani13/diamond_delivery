@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:vendor_dashboard/core/network/auth_event_bus.dart';
 
 enum AuthEvent { forcedLogout }
 

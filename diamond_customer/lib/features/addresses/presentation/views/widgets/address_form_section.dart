@@ -48,6 +48,12 @@ class AddressFormSection extends StatelessWidget {
                 )
               : (context.isArabic ? 'مصر' : 'Egypt');
 
+          // ? if(UnauthorizedException) context.localizedText(
+          //     lookupState.selectedCountry!.nameAr,
+          //     lookupState.selectedCountry!.nameEn,
+          //   )
+          // : (context.isArabic ? 'مصر' : 'Egypt');
+
           final governorateText = lookupState.selectedGovernorate != null
               ? context.localizedText(
                   lookupState.selectedGovernorate!.nameAr,
@@ -67,7 +73,9 @@ class AddressFormSection extends StatelessWidget {
               AppTextField(
                 controller: labelController,
                 label: context.isArabic ? 'اسم هذا العنوان' : 'Address Name',
-                hint: context.isArabic ? 'المنزل، العمل، الاستراحة...' : 'Home, Office...',
+                hint: context.isArabic
+                    ? 'المنزل، العمل، الاستراحة...'
+                    : 'Home, Office...',
                 prefixIcon: Icons.bookmark_border_rounded,
               ),
               SizedBox(height: 16.h),
@@ -111,21 +119,29 @@ class AddressFormSection extends StatelessWidget {
               AppTextField(
                 controller: areaController,
                 label: context.isArabic ? 'الحي / المنطقة' : 'District / Area',
-                hint: context.isArabic ? 'مثال: المعادي، وسط البلد...' : 'e.g., Maadi, Downtown...',
+                hint: context.isArabic
+                    ? 'مثال: المعادي، وسط البلد...'
+                    : 'e.g., Maadi, Downtown...',
                 prefixIcon: Icons.map_outlined,
               ),
               SizedBox(height: 16.h),
               AppTextField(
                 controller: detailsController,
                 label: context.isArabic ? 'تفاصيل الشارع' : 'Street Details',
-                hint: context.isArabic ? 'مثال: شارع الملك فيصل' : 'e.g., Main Street',
+                hint: context.isArabic
+                    ? 'مثال: شارع الملك فيصل'
+                    : 'e.g., Main Street',
                 prefixIcon: Icons.location_on_outlined,
               ),
               SizedBox(height: 16.h),
               AppTextField(
                 controller: buildingController,
-                label: context.isArabic ? 'رقم المبنى / الشقة / تفاصيل إضافية' : 'Building / Apt / Floor Details',
-                hint: context.isArabic ? 'مثال: مبنى 14، شقة 5، الدور الثاني' : 'e.g., Bldg 14, Apt 5',
+                label: context.isArabic
+                    ? 'رقم المبنى / الشقة / تفاصيل إضافية'
+                    : 'Building / Apt / Floor Details',
+                hint: context.isArabic
+                    ? 'مثال: مبنى 14، شقة 5، الدور الثاني'
+                    : 'e.g., Bldg 14, Apt 5',
                 prefixIcon: Icons.home_work_outlined,
               ),
             ],

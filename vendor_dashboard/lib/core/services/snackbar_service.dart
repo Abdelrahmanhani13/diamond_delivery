@@ -21,7 +21,11 @@ class SnackbarService {
     _showSnackbar(message, VendorColors.primary, Icons.info_outline);
   }
 
-  static void _showSnackbar(String message, Color backgroundColor, IconData icon) {
+  static void _showSnackbar(
+    String message,
+    Color backgroundColor,
+    IconData icon,
+  ) {
     // Ensure we run this on the main thread
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scaffoldMessengerKey.currentState

@@ -10,8 +10,9 @@ abstract class AuthRepository {
     String password,
     String deviceName,
   );
-  
+
   Future<Either<Failure, RegisterResponse>> register(
+    //TODO sigunUpRequest & use enum types
     String firstName,
     String lastName,
     String phoneNumber,
@@ -21,27 +22,27 @@ abstract class AuthRepository {
     String? genderId,
     String? dateOfBirth,
   );
-  
+
   Future<Either<Failure, RequestOtpResponse>> requestOtp(
     String phoneNumber,
     String otpType,
   );
-  
+
   Future<Either<Failure, AuthTokens>> verifyOtp(
     String phoneNumber,
     String code,
     String otpType,
     String deviceName,
   );
-  
+
   Future<Either<Failure, void>> logout(String refreshToken);
-  
+
   Future<Either<Failure, void>> resetPassword(
     String phoneNumber,
     String code,
     String newPassword,
   );
-  
+
   Future<Either<Failure, void>> registerDevice(
     String devicePlatform,
     String deviceId,

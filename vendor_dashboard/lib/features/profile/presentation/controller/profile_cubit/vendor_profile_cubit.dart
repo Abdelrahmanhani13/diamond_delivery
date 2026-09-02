@@ -1,8 +1,8 @@
-// presentation/controller/profile_cubit/vendor_profile_cubit.dart
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vendor_dashboard/core/errors/failures.dart';
+import 'package:vendor_dashboard/features/profile/data/models/vendor_update_profile_request_model.dart';
 import 'package:vendor_dashboard/features/profile/domain/entities/vendor_profile.dart';
 import 'package:vendor_dashboard/features/profile/domain/usecases/vendor_get_profile_use_case.dart';
 import 'package:vendor_dashboard/features/profile/domain/usecases/vendor_update_profile_use_case.dart';
@@ -17,10 +17,8 @@ class VendorProfileCubit extends Cubit<VendorProfileState> {
   final VendorUploadLogoUseCase uploadLogoUseCase;
   final VendorUploadCoverUseCase uploadCoverUseCase;
 
-  /// بنحتفظ بآخر بروفايل اتحمّل عشان نقدر نكمّل بيه الحقول اللي شاشة
-  /// التعديل مش بتديها (زي whatsapp, email, openTime..) وقت الـ PUT،
-  /// لأن الـ endpoint بياخد الجسم كامل مش partial update.
   VendorProfile? _currentProfile;
+  VendorProfile? get currentProfile => _currentProfile;
 
   VendorProfileCubit({
     required this.getProfileUseCase,
@@ -40,6 +38,60 @@ class VendorProfileCubit extends Cubit<VendorProfileState> {
     });
   }
 
+  Future<void> toggleOpenStatus(bool isOpen) async {
+    final current = state;
+    if (current is! VendorProfileLoaded) return;
+
+    emit(current.copyWith(isUpdatingStatus: true));
+    final updatedProfile = current.profile.copyWith(isOpenNow: isOpen);
+
+    final request = VendorUpdateProfileRequestModel(
+      nameArabic: updatedProfile.nameArabic,
+      nameEnglish: updatedProfile.nameEnglish,
+      phoneNumber: updatedProfile.phoneNumber,
+      address: updatedProfile.addressText,
+      latitude: updatedProfile.latitude,
+      longitude: updatedProfile.longitude,
+      deliveryFee: updatedProfile.deliveryFee,
+      minimumOrder: updatedProfile.minimumOrder,
+    );
+
+    final result = await updateProfileUseCase(request);
+    result.fold(
+      (failure) {
+        emit(current.copyWith(isUpdatingStatus: false));
+      },
+      (profile) {
+        _currentProfile = profile;
+        emit(VendorProfileLoaded(profile, stats: current.stats));
+      },
+    );
+  }
+
+  Future<void> uploadLogo(File logoFile) async {
+    final current = state;
+    if (current is! VendorProfileLoaded) return;
+
+    final result = await uploadLogoUseCase(logoFile);
+    result.fold((_) {}, (url) {
+      final updated = current.profile.copyWith(logoUrl: url);
+      _currentProfile = updated;
+      emit(current.copyWith(profile: updated));
+    });
+  }
+
+  Future<void> uploadCover(File coverFile) async {
+    final current = state;
+    if (current is! VendorProfileLoaded) return;
+
+    final result = await uploadCoverUseCase(coverFile);
+    result.fold((_) {}, (url) {
+      final updated = current.profile.copyWith(coverUrl: url);
+      _currentProfile = updated;
+      emit(current.copyWith(profile: updated));
+    });
+  }
+
   Future<void> updateProfile({
     required String storeName,
     required String phone,
@@ -52,15 +104,15 @@ class VendorProfileCubit extends Cubit<VendorProfileState> {
 
     final base = _currentProfile;
 
-    final updateResult = await updateProfileUseCase(
-      storeName: storeName,
-      storeNameEn: base?.storeNameEn,
-      phone: phone,
+    final request = VendorUpdateProfileRequestModel(
+      nameArabic: storeName,
+      nameEnglish: base?.storeNameEn ?? storeName,
+      phoneNumber: phone,
       address: address,
       latitude: base?.latitude ?? 0.0,
       longitude: base?.longitude ?? 0.0,
-      description: description,
-      descriptionEn: base?.descriptionEn,
+      descriptionArabic: description,
+      descriptionEnglish: base?.descriptionEn,
       whatsappNumber: base?.whatsappNumber,
       email: base?.email,
       openTime: base?.openTime,
@@ -68,6 +120,8 @@ class VendorProfileCubit extends Cubit<VendorProfileState> {
       deliveryFee: base?.deliveryFee ?? 0.0,
       minimumOrder: base?.minimumOrder ?? 0.0,
     );
+
+    final updateResult = await updateProfileUseCase(request);
 
     if (updateResult.isLeft()) {
       final failure = updateResult.fold((l) => l, (r) => null)!;

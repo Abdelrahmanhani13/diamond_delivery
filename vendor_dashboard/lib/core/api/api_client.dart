@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import '../errors/exceptions.dart';
 import 'api_error.dart';
-import 'package:vendor_dashboard/core/api/api_client.dart';
 
 enum _HttpMethod { get, post, put, patch, delete }
 

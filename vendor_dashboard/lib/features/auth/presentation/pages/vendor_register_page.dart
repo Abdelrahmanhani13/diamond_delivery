@@ -9,6 +9,8 @@ import '../../../../core/theme/vendor_text_styles.dart';
 
 import '../controller/register_cubit/vendor_register_cubit.dart';
 import '../controller/register_cubit/vendor_register_state.dart';
+import '../widgets/register_header_card.dart';
+import '../widgets/register_location_picker_tile.dart';
 
 class VendorRegisterPage extends StatefulWidget {
   const VendorRegisterPage({super.key});
@@ -36,6 +38,22 @@ class _VendorRegisterPageState extends State<VendorRegisterPage> {
   double? _selectedLat;
   double? _selectedLng;
 
+  @override
+  void dispose() {
+    _nameArabicController.dispose();
+    _nameEnglishController.dispose();
+    _phoneController.dispose();
+    _whatsappController.dispose();
+    _emailController.dispose();
+    _addressController.dispose();
+    _descriptionArabicController.dispose();
+    _descriptionEnglishController.dispose();
+    _deliveryFeeController.dispose();
+    _minimumOrderController.dispose();
+    _vendorCategoryIdController.dispose();
+    super.dispose();
+  }
+
   Future<void> _pickLocation() async {
     final result = await context.push<GeocodedAddress>('/location-picker');
 
@@ -53,6 +71,49 @@ class _VendorRegisterPageState extends State<VendorRegisterPage> {
               result.city,
             ].where((e) => e.trim().isNotEmpty).join('، ');
     });
+  }
+
+  void _submit(BuildContext context) {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_selectedLat == null || _selectedLng == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('يرجى تحديد موقع المتجر على الخريطة أولاً'),
+          backgroundColor: VendorColors.error,
+        ),
+      );
+      return;
+    }
+
+    final deliveryFee =
+        double.tryParse(_deliveryFeeController.text.trim()) ?? 0;
+    final minimumOrder =
+        double.tryParse(_minimumOrderController.text.trim()) ?? 0;
+
+    context.read<VendorRegisterCubit>().register(
+      vendorCategoryId: _vendorCategoryIdController.text.trim(),
+      nameArabic: _nameArabicController.text.trim(),
+      nameEnglish: _nameEnglishController.text.trim(),
+      phoneNumber: _phoneController.text.trim(),
+      address: _addressController.text.trim(),
+      latitude: _selectedLat!,
+      longitude: _selectedLng!,
+      descriptionArabic: _descriptionArabicController.text.trim().isNotEmpty
+          ? _descriptionArabicController.text.trim()
+          : null,
+      descriptionEnglish: _descriptionEnglishController.text.trim().isNotEmpty
+          ? _descriptionEnglishController.text.trim()
+          : null,
+      whatsappNumber: _whatsappController.text.trim().isNotEmpty
+          ? _whatsappController.text.trim()
+          : null,
+      email: _emailController.text.trim().isNotEmpty
+          ? _emailController.text.trim()
+          : null,
+      deliveryFee: deliveryFee,
+      minimumOrder: minimumOrder,
+    );
   }
 
   @override
@@ -92,6 +153,8 @@ class _VendorRegisterPageState extends State<VendorRegisterPage> {
               }
             },
             builder: (context, state) {
+              final isLoading = state is VendorRegisterLoading;
+
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
                 child: Form(
@@ -99,103 +162,15 @@ class _VendorRegisterPageState extends State<VendorRegisterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // ==============================
-                      // Header
-                      // ==============================
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: VendorColors.primaryLight,
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: Column(
-                          children: [
-                            const Icon(
-                              Icons.store_rounded,
-                              size: 48,
-                              color: VendorColors.primary,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'أنشئ متجرك الآن',
-                              style: VendorTextStyles.headingMedium.copyWith(
-                                color: VendorColors.primary,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'أدخل بيانات المتجر وموقعه للبدء في البيع',
-                              style: VendorTextStyles.bodySmall.copyWith(
-                                color: VendorColors.primaryDark,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-
+                      const RegisterHeaderCard(),
                       const SizedBox(height: 24),
-
-                      // ==============================
-                      // Store Location
-                      // ==============================
-                      Text(
-                        'موقع المتجر',
-                        style: VendorTextStyles.bodyMedium.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      GestureDetector(
+                      RegisterLocationPickerTile(
+                        latitude: _selectedLat,
+                        longitude: _selectedLng,
+                        addressText: _addressController.text,
                         onTap: _pickLocation,
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: VendorColors.primaryLight,
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: VendorColors.primary.withValues(alpha: 0.25),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.location_on_rounded,
-                                color: VendorColors.primary,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  _selectedLat == null
-                                      ? 'اضغط لتحديد موقع المتجر على الخريطة'
-                                      : (_addressController.text.isNotEmpty
-                                            ? _addressController.text
-                                            : 'تم تحديد الموقع'),
-                                  style: VendorTextStyles.bodyMedium,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const Icon(Icons.chevron_left),
-                            ],
-                          ),
-                        ),
                       ),
-
-                      if (_selectedLat != null && _selectedLng != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          'Lat: ${_selectedLat!.toStringAsFixed(5)}  |  '
-                          'Lng: ${_selectedLng!.toStringAsFixed(5)}',
-                          style: VendorTextStyles.bodySmall,
-                          textDirection: TextDirection.ltr,
-                        ),
-                      ],
-
                       const SizedBox(height: 16),
-
                       _buildField(
                         controller: _addressController,
                         label: 'العنوان الظاهر',
@@ -203,24 +178,14 @@ class _VendorRegisterPageState extends State<VendorRegisterPage> {
                         required: true,
                         maxLines: 2,
                       ),
-
                       const SizedBox(height: 16),
-
-                      // ==============================
-                      // Store Name Arabic
-                      // ==============================
                       _buildField(
                         controller: _nameArabicController,
                         label: 'اسم المتجر (عربي)',
                         icon: Icons.storefront_outlined,
                         required: true,
                       ),
-
                       const SizedBox(height: 16),
-
-                      // ==============================
-                      // Store Name English
-                      // ==============================
                       _buildField(
                         controller: _nameEnglishController,
                         label: 'اسم المتجر (إنجليزي)',
@@ -228,12 +193,7 @@ class _VendorRegisterPageState extends State<VendorRegisterPage> {
                         required: true,
                         textDirection: TextDirection.ltr,
                       ),
-
                       const SizedBox(height: 16),
-
-                      // ==============================
-                      // Phone
-                      // ==============================
                       _buildField(
                         controller: _phoneController,
                         label: 'رقم الجوال',
@@ -242,12 +202,16 @@ class _VendorRegisterPageState extends State<VendorRegisterPage> {
                         keyboardType: TextInputType.phone,
                         textDirection: TextDirection.ltr,
                       ),
-
                       const SizedBox(height: 16),
-
-                      // ==============================
-                      // WhatsApp
-                      // ==============================
+                      _buildField(
+                        controller: _vendorCategoryIdController,
+                        label: 'معرّف فئة المتجر (GUID)',
+                        icon: Icons.category_outlined,
+                        required: true,
+                        textDirection: TextDirection.ltr,
+                        helperText: 'مؤقتًا: أدخل GUID الفئة',
+                      ),
+                      const SizedBox(height: 16),
                       _buildField(
                         controller: _whatsappController,
                         label: 'رقم الواتساب (اختياري)',
@@ -255,12 +219,7 @@ class _VendorRegisterPageState extends State<VendorRegisterPage> {
                         keyboardType: TextInputType.phone,
                         textDirection: TextDirection.ltr,
                       ),
-
                       const SizedBox(height: 16),
-
-                      // ==============================
-                      // Email
-                      // ==============================
                       _buildField(
                         controller: _emailController,
                         label: 'البريد الإلكتروني (اختياري)',
@@ -268,112 +227,76 @@ class _VendorRegisterPageState extends State<VendorRegisterPage> {
                         keyboardType: TextInputType.emailAddress,
                         textDirection: TextDirection.ltr,
                       ),
-
                       const SizedBox(height: 16),
-
-                      // ==============================
-                      // Delivery Fee + Minimum Order
-                      // ==============================
+                      _buildField(
+                        controller: _descriptionArabicController,
+                        label: 'وصف المتجر (عربي - اختياري)',
+                        icon: Icons.description_outlined,
+                        maxLines: 3,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildField(
+                        controller: _descriptionEnglishController,
+                        label: 'وصف المتجر (إنجليزي - اختياري)',
+                        icon: Icons.description_outlined,
+                        maxLines: 3,
+                      ),
+                      const SizedBox(height: 16),
                       Row(
                         children: [
                           Expanded(
                             child: _buildField(
                               controller: _deliveryFeeController,
-                              label: 'رسوم التوصيل',
+                              label: 'رسوم التوصيل (د.أ)',
                               icon: Icons.local_shipping_outlined,
                               required: true,
                               keyboardType:
                                   const TextInputType.numberWithOptions(
                                     decimal: true,
                                   ),
-                              textDirection: TextDirection.ltr,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 16),
                           Expanded(
                             child: _buildField(
                               controller: _minimumOrderController,
-                              label: 'الحد الأدنى للطلب',
+                              label: 'الحد الأدنى (د.أ)',
                               icon: Icons.shopping_bag_outlined,
                               required: true,
                               keyboardType:
                                   const TextInputType.numberWithOptions(
                                     decimal: true,
                                   ),
-                              textDirection: TextDirection.ltr,
                             ),
                           ),
                         ],
                       ),
-
-                      const SizedBox(height: 16),
-
-                      // ==============================
-                      // Vendor Category
-                      // ==============================
-                      _buildField(
-                        controller: _vendorCategoryIdController,
-                        label: 'معرف فئة المتجر (Category Id)',
-                        icon: Icons.category_outlined,
-                        required: true,
-                        textDirection: TextDirection.ltr,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // ==============================
-                      // Arabic Description
-                      // ==============================
-                      _buildField(
-                        controller: _descriptionArabicController,
-                        label: 'وصف المتجر (عربي) - اختياري',
-                        icon: Icons.description_outlined,
-                        maxLines: 3,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // ==============================
-                      // English Description
-                      // ==============================
-                      _buildField(
-                        controller: _descriptionEnglishController,
-                        label: 'وصف المتجر (إنجليزي) - اختياري',
-                        icon: Icons.description_outlined,
-                        maxLines: 3,
-                        textDirection: TextDirection.ltr,
-                      ),
-
                       const SizedBox(height: 32),
-
-                      // ==============================
-                      // Register Button
-                      // ==============================
                       SizedBox(
                         height: 52,
-                        child: state is VendorRegisterLoading
-                            ? const Center(
-                                child: CircularProgressIndicator(
-                                  color: VendorColors.primary,
-                                ),
-                              )
-                            : ElevatedButton(
-                                onPressed: () {
-                                  _submitRegistration(context);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: VendorColors.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
+                        child: ElevatedButton(
+                          onPressed: isLoading ? null : () => _submit(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: VendorColors.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: VendorColors.white,
+                                    strokeWidth: 2,
                                   ),
-                                ),
-                                child: Text(
-                                  'إنشاء المتجر',
+                                )
+                              : Text(
+                                  'تأكيد وإنشاء المتجر',
                                   style: VendorTextStyles.buttonLarge,
                                 ),
-                              ),
+                        ),
                       ),
-
                       const SizedBox(height: 24),
                     ],
                   ),
@@ -386,113 +309,33 @@ class _VendorRegisterPageState extends State<VendorRegisterPage> {
     );
   }
 
-  // ============================================================
-  // Submit Registration
-  // ============================================================
-
-  void _submitRegistration(BuildContext context) {
-    if (_selectedLat == null || _selectedLng == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('من فضلك حدد موقع المتجر على الخريطة أولاً'),
-          backgroundColor: VendorColors.error,
-        ),
-      );
-      return;
-    }
-
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    final deliveryFee =
-        double.tryParse(_deliveryFeeController.text.trim()) ?? 0;
-
-    final minimumOrder =
-        double.tryParse(_minimumOrderController.text.trim()) ?? 0;
-
-    context.read<VendorRegisterCubit>().register(
-      vendorCategoryId: _vendorCategoryIdController.text.trim(),
-
-      nameArabic: _nameArabicController.text.trim(),
-
-      nameEnglish: _nameEnglishController.text.trim(),
-
-      phoneNumber: _phoneController.text.trim(),
-
-      address: _addressController.text.trim(),
-
-      latitude: _selectedLat!,
-
-      longitude: _selectedLng!,
-
-      descriptionArabic: _descriptionArabicController.text.trim().isEmpty
-          ? null
-          : _descriptionArabicController.text.trim(),
-
-      descriptionEnglish: _descriptionEnglishController.text.trim().isEmpty
-          ? null
-          : _descriptionEnglishController.text.trim(),
-
-      whatsappNumber: _whatsappController.text.trim().isEmpty
-          ? null
-          : _whatsappController.text.trim(),
-
-      email: _emailController.text.trim().isEmpty
-          ? null
-          : _emailController.text.trim(),
-
-      deliveryFee: deliveryFee,
-
-      minimumOrder: minimumOrder,
-    );
-  }
-
-  // ============================================================
-  // Text Field Builder
-  // ============================================================
-
   Widget _buildField({
     required TextEditingController controller,
     required String label,
     required IconData icon,
     bool required = false,
-    int maxLines = 1,
-    TextInputType? keyboardType,
+    TextInputType keyboardType = TextInputType.text,
     TextDirection? textDirection,
+    int maxLines = 1,
+    String? helperText,
   }) {
     return TextFormField(
       controller: controller,
-      maxLines: maxLines,
       keyboardType: keyboardType,
       textDirection: textDirection,
-      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
-      validator: required
-          ? (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'هذا الحقل مطلوب';
-              }
-
-              return null;
-            }
-          : null,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        helperText: helperText,
+      ),
+      validator: (value) {
+        if (!required) return null;
+        if (value == null || value.trim().isEmpty) {
+          return 'هذا الحقل مطلوب';
+        }
+        return null;
+      },
     );
-  }
-
-  @override
-  void dispose() {
-    _nameArabicController.dispose();
-    _nameEnglishController.dispose();
-    _phoneController.dispose();
-    _whatsappController.dispose();
-    _emailController.dispose();
-    _addressController.dispose();
-    _descriptionArabicController.dispose();
-    _descriptionEnglishController.dispose();
-    _deliveryFeeController.dispose();
-    _minimumOrderController.dispose();
-    _vendorCategoryIdController.dispose();
-
-    super.dispose();
   }
 }

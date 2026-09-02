@@ -13,8 +13,8 @@ class RequestOtpResponse extends Equatable {
 
   @override
   List<Object?> get props => [
-        maskedPhoneNumber,
-        otpExpiryMinutes,
-        resendCooldownSeconds,
-      ];
+    maskedPhoneNumber,
+    otpExpiryMinutes,
+    resendCooldownSeconds,
+  ];
 }

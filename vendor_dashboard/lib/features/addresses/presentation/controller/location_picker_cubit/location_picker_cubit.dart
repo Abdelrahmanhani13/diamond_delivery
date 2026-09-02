@@ -54,7 +54,10 @@ class LocationPickerCubit extends Cubit<LocationPickerState> {
       emit(LocationPickerLoading());
     }
 
-    final result = await _reverseGeocodeUseCase(coordinates);
+    final result = await _reverseGeocodeUseCase(
+      coordinates.latitude,
+      coordinates.longitude,
+    );
     // FIX: نفس المشكلة — الـ reverseGeocode request ممكن يفضل شغال
     // (خصوصاً مع Nominatim اللي بياخد وقت) والمستخدم يقفل الشاشة
     // قبل ما يرد. لازم نتأكد إن الـ Cubit لسه مش مقفول قبل الـ emit.

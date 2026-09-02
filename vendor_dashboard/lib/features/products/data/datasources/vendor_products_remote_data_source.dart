@@ -1,19 +1,20 @@
-// data/datasources/vendor_product_remote_data_source.dart
 import 'dart:io';
 import 'package:dio/dio.dart';
-import '../../../../core/api/vendor_api_constants.dart';
+import 'package:vendor_dashboard/core/api/api_client.dart';
+import 'package:vendor_dashboard/core/api/api_constants.dart';
 import '../models/vendor_product_model.dart';
 import '../models/vendor_product_list_item_model.dart';
 import '../models/vendor_product_image_model.dart';
 import '../models/vendor_product_request_model.dart';
-import 'package:vendor_dashboard/core/api/api_client.dart';
-import 'package:vendor_dashboard/core/api/vendor_api_constants.dart';
 
 abstract class VendorProductRemoteDataSource {
   Future<VendorProductPageModel> getProducts({
     required int page,
     required int pageSize,
     String? subCategoryId,
+    String? search,
+    bool? isAvailable,
+    int? sortBy,
   });
 
   Future<VendorProductModel> getProductById(String id);
@@ -61,15 +62,27 @@ class VendorProductRemoteDataSourceImpl
     required int page,
     required int pageSize,
     String? subCategoryId,
+    String? search,
+    bool? isAvailable,
+    int? sortBy,
   }) async {
+    final query = <String, dynamic>{'page': page, 'pageSize': pageSize};
+    if (subCategoryId != null && subCategoryId.isNotEmpty) {
+      query['subCategoryId'] = subCategoryId;
+    }
+    if (search != null && search.isNotEmpty) {
+      query['search'] = search;
+    }
+    if (isAvailable != null) {
+      query['isAvailable'] = isAvailable;
+    }
+    if (sortBy != null) {
+      query['sortBy'] = sortBy;
+    }
+
     final response = await apiClient.get(
       ApiConstants.vendorProducts,
-      queryParameters: {
-        'page': page,
-        'pageSize': pageSize,
-        if (subCategoryId != null && subCategoryId.isNotEmpty)
-          'subCategoryId': subCategoryId,
-      },
+      queryParameters: query,
     );
     return VendorProductPageModel.fromJson(response as Map<String, dynamic>);
   }
@@ -96,9 +109,6 @@ class VendorProductRemoteDataSourceImpl
     String id,
     VendorProductRequestModel request,
   ) async {
-    // ملحوظة: السواجر مبيّنش الميثود بالحرف (بس فيه id في الـ path ونفس
-    // الـ body بتاع الإنشاء) → مفترض PUT (استبدال كامل)، وده المتعارف
-    // عليه REST-wise. لو فعليًا PATCH عندك قولّي أظبطها في ثانية.
     final response = await apiClient.put(
       ApiConstants.vendorProductById(id),
       data: request.toJson(),
@@ -108,9 +118,6 @@ class VendorProductRemoteDataSourceImpl
 
   @override
   Future<void> deleteProduct(String id) async {
-    // ملحوظة: مفيش DELETE endpoint في السواجر اللي اتبعت لحد دلوقتي.
-    // الافتراض هنا: DELETE /Vendor/products/{id} (نفس نمط الـ REST
-    // الموجود). لو الـ endpoint الفعلي مختلف ابعتهولي وأظبطه بسرعة.
     await apiClient.delete(ApiConstants.vendorProductById(id));
   }
 
@@ -132,16 +139,20 @@ class VendorProductRemoteDataSourceImpl
     required File file,
   }) async {
     final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(file.path),
+      'file': await MultipartFile.fromFile(
+        file.path,
+        filename: file.path.split(Platform.pathSeparator).last,
+      ),
     });
     final response = await apiClient.post(
       ApiConstants.vendorProductImages(productId),
       data: formData,
     );
     final map = response as Map<String, dynamic>;
-    return VendorProductImageModel.fromJson(
-      map['data'] as Map<String, dynamic>,
-    );
+    final data = map['data'] is Map<String, dynamic>
+        ? map['data'] as Map<String, dynamic>
+        : map;
+    return VendorProductImageModel.fromJson(data);
   }
 
   @override

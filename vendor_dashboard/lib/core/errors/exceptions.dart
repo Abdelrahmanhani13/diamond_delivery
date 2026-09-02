@@ -1,5 +1,4 @@
-import 'package:vendor_dashboard/core/api/api_response.dart';
-import 'package:vendor_dashboard/core/errors/exceptions.dart';
+import 'package:vendor_dashboard/core/api/api_error.dart';
 
 /// Base Exception لجميع استثناءات الشبكة والنظام
 abstract class ServerException implements Exception {

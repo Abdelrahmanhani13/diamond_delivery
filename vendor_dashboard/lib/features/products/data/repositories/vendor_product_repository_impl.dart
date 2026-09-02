@@ -1,14 +1,11 @@
-// data/repositories/vendor_product_repository_impl.dart
 import 'dart:io';
 import 'package:dartz/dartz.dart';
+import 'package:vendor_dashboard/core/errors/exceptions.dart';
+import 'package:vendor_dashboard/core/errors/failures.dart';
 import 'package:vendor_dashboard/features/products/data/datasources/vendor_products_remote_data_source.dart';
-import '../../../../core/errors/exceptions.dart';
-import '../../../../core/errors/failures.dart';
 import '../../domain/entities/vendor_product.dart';
 import '../../domain/repositories/vendor_product_repository.dart';
 import '../models/vendor_product_request_model.dart';
-import 'package:vendor_dashboard/core/errors/failures.dart';
-import 'package:vendor_dashboard/core/errors/exceptions.dart';
 
 class VendorProductRepositoryImpl implements VendorProductRepository {
   final VendorProductRemoteDataSource remoteDataSource;
@@ -21,12 +18,18 @@ class VendorProductRepositoryImpl implements VendorProductRepository {
     required int page,
     required int pageSize,
     String? subCategoryId,
+    String? search,
+    bool? isAvailable,
+    int? sortBy,
   }) async {
     try {
       final result = await remoteDataSource.getProducts(
         page: page,
         pageSize: pageSize,
         subCategoryId: subCategoryId,
+        search: search,
+        isAvailable: isAvailable,
+        sortBy: sortBy,
       );
       return Right((products: result.items, hasNextPage: result.hasNextPage));
     } on ServerException catch (e) {

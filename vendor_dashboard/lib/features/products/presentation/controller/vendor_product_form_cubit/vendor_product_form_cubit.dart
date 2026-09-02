@@ -1,4 +1,3 @@
-// presentation/controller/product_form_cubit/vendor_product_form_cubit.dart
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vendor_dashboard/features/products/domain/usecases/create_vendor_product_use_case.dart';
@@ -24,12 +23,7 @@ class VendorProductFormCubit extends Cubit<VendorProductFormState> {
     required this.setPrimaryImageUseCase,
   }) : super(VendorProductFormInitial());
 
-  /// ملحوظة مهمة: الـ API محتاج subCategoryId (required) + اسم/وصف
-  /// عربي وإنجليزي منفصلين + sku/barcode/weight اختياريين. صفحة
-  /// الإضافة اللي بعتهالي دلوقتي فيها حقل اسم/وصف/سعر واحد بس، فلازم
-  /// تتضاف لها حقول subCategoryId (dropdown من subcategories) + الاسم
-  /// والوصف بالإنجليزي كمان قبل ما ننادي addProduct هنا فعليًا.
-  Future<void> addProduct({
+  Future<void> createProduct({
     required String subCategoryId,
     required String nameArabic,
     required String nameEnglish,
@@ -63,6 +57,32 @@ class VendorProductFormCubit extends Cubit<VendorProductFormState> {
       (product) => emit(VendorProductFormSuccess(product)),
     );
   }
+
+  Future<void> addProduct({
+    required String subCategoryId,
+    required String nameArabic,
+    required String nameEnglish,
+    String? descriptionArabic,
+    String? descriptionEnglish,
+    required double price,
+    double? discountPrice,
+    int stockQuantity = 0,
+    String? sku,
+    String? barcode,
+    double? weight,
+  }) => createProduct(
+    subCategoryId: subCategoryId,
+    nameArabic: nameArabic,
+    nameEnglish: nameEnglish,
+    descriptionArabic: descriptionArabic,
+    descriptionEnglish: descriptionEnglish,
+    price: price,
+    discountPrice: discountPrice,
+    stockQuantity: stockQuantity,
+    sku: sku,
+    barcode: barcode,
+    weight: weight,
+  );
 
   Future<void> updateProduct({
     required String id,
@@ -101,10 +121,16 @@ class VendorProductFormCubit extends Cubit<VendorProductFormState> {
     );
   }
 
-  Future<void> uploadImage(String productId, File file) async {
+  Future<void> uploadImage({
+    required String productId,
+    required File imageFile,
+  }) async {
     emit(VendorProductImageUploading());
 
-    final result = await uploadImageUseCase(productId: productId, file: file);
+    final result = await uploadImageUseCase(
+      productId: productId,
+      file: imageFile,
+    );
 
     result.fold(
       (failure) => emit(VendorProductFormError(failure.errMessage)),
@@ -112,7 +138,10 @@ class VendorProductFormCubit extends Cubit<VendorProductFormState> {
     );
   }
 
-  Future<void> deleteImage(String productId, String imageId) async {
+  Future<void> deleteImage({
+    required String productId,
+    required String imageId,
+  }) async {
     final result = await deleteImageUseCase(
       productId: productId,
       imageId: imageId,
@@ -124,7 +153,10 @@ class VendorProductFormCubit extends Cubit<VendorProductFormState> {
     );
   }
 
-  Future<void> setPrimaryImage(String productId, String imageId) async {
+  Future<void> setPrimaryImage({
+    required String productId,
+    required String imageId,
+  }) async {
     final result = await setPrimaryImageUseCase(
       productId: productId,
       imageId: imageId,

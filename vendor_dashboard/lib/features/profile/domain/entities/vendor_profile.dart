@@ -1,9 +1,3 @@
-// domain/entities/vendor_profile.dart
-
-/// Entity نظيف (Domain layer) بيمثل بروفايل التاجر.
-/// أسماء الحقول اتبنت عشان تطابق استخدام الـ UI (storeName, phone, description..)
-/// مع الاحتفاظ بباقي الحقول اللي راجعة من الـ API عشان نقدر نبعتها تاني
-/// في الـ PUT request من غير ما نفقد بيانات.
 class VendorProfile {
   final String id;
   final String userId;
@@ -77,6 +71,12 @@ class VendorProfile {
     this.updatedAt,
   });
 
+  String get nameArabic => storeName;
+  String get nameEnglish => storeNameEn ?? '';
+  bool get isOpen => isOpenNow;
+  String get phoneNumber => phone ?? '';
+  String get addressText => address ?? '';
+
   VendorProfile copyWith({
     String? storeName,
     String? storeNameEn,
@@ -92,6 +92,7 @@ class VendorProfile {
     String? address,
     String? openTime,
     String? closeTime,
+    bool? isOpenNow,
     double? deliveryFee,
     double? minimumOrder,
   }) {
@@ -114,7 +115,7 @@ class VendorProfile {
       address: address ?? this.address,
       openTime: openTime ?? this.openTime,
       closeTime: closeTime ?? this.closeTime,
-      isOpenNow: isOpenNow,
+      isOpenNow: isOpenNow ?? this.isOpenNow,
       deliveryFee: deliveryFee ?? this.deliveryFee,
       minimumOrder: minimumOrder ?? this.minimumOrder,
       ratingAverage: ratingAverage,

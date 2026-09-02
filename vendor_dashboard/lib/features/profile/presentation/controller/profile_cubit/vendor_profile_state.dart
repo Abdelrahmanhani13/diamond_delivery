@@ -1,4 +1,4 @@
-// presentation/controller/profile_cubit/vendor_profile_state.dart
+import 'package:vendor_dashboard/features/profile/data/models/vendor_dashboard_stats_model.dart';
 import '../../../domain/entities/vendor_profile.dart';
 
 abstract class VendorProfileState {
@@ -15,7 +15,26 @@ class VendorProfileLoading extends VendorProfileState {
 
 class VendorProfileLoaded extends VendorProfileState {
   final VendorProfile profile;
-  const VendorProfileLoaded(this.profile);
+  final VendorDashboardStatsModel? stats;
+  final bool isUpdatingStatus;
+
+  const VendorProfileLoaded(
+    this.profile, {
+    this.stats,
+    this.isUpdatingStatus = false,
+  });
+
+  VendorProfileLoaded copyWith({
+    VendorProfile? profile,
+    VendorDashboardStatsModel? stats,
+    bool? isUpdatingStatus,
+  }) {
+    return VendorProfileLoaded(
+      profile ?? this.profile,
+      stats: stats ?? this.stats,
+      isUpdatingStatus: isUpdatingStatus ?? this.isUpdatingStatus,
+    );
+  }
 }
 
 class VendorProfileError extends VendorProfileState {
@@ -23,7 +42,6 @@ class VendorProfileError extends VendorProfileState {
   const VendorProfileError(this.message);
 }
 
-/// بيتبعت وقت تنفيذ التحديث (نص + رفع الصور لو موجودة).
 class VendorProfileUpdating extends VendorProfileState {
   const VendorProfileUpdating();
 }

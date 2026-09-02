@@ -59,7 +59,11 @@ class AppAssetImage extends StatelessWidget {
         borderRadius: borderRadius ?? BorderRadius.circular(AppRadius.md),
       ),
       alignment: Alignment.center,
-      child: Icon(fallbackIcon, color: fallbackColor, size: (height ?? 48) * 0.45),
+      child: Icon(
+        fallbackIcon,
+        color: fallbackColor,
+        size: (height ?? 48) * 0.45,
+      ),
     );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:vendor_dashboard/features/auth/data/datasources/vendor_auth_local_data_source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -81,7 +80,9 @@ class _VendorLoginPageState extends State<VendorLoginPage> {
                             borderRadius: BorderRadius.circular(24),
                             boxShadow: [
                               BoxShadow(
-                                color: VendorColors.primary.withValues(alpha: 0.3),
+                                color: VendorColors.primary.withValues(
+                                  alpha: 0.3,
+                                ),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -106,7 +107,9 @@ class _VendorLoginPageState extends State<VendorLoginPage> {
                               Text(
                                 'لوحة تحكم البائع',
                                 style: VendorTextStyles.bodyMedium.copyWith(
-                                  color: VendorColors.white.withValues(alpha: 0.85),
+                                  color: VendorColors.white.withValues(
+                                    alpha: 0.85,
+                                  ),
                                 ),
                               ),
                             ],
@@ -229,7 +232,7 @@ class _VendorLoginPageState extends State<VendorLoginPage> {
                                     }
 
                                     context.read<VendorLoginCubit>().login(
-                                      email: _emailController.text.trim(),
+                                      phone: _emailController.text.trim(),
                                       password: _passwordController.text.trim(),
                                       deviceName: 'Vendor Dashboard',
                                     );

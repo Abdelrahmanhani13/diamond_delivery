@@ -1,10 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:vendor_dashboard/core/network/nominatim_client.dart';
-import '../../../../core/errors/exceptions.dart'
+import 'package:geolocator/geolocator.dart'
     hide LocationServiceDisabledException;
-import '../models/geocoded_address_model.dart';
+import 'package:vendor_dashboard/core/network/nominatim_client.dart';
 import 'package:vendor_dashboard/core/errors/exceptions.dart';
+import '../models/geocoded_address_model.dart';
 
 abstract class LocationDataSource {
   Future<Position> getCurrentPosition();

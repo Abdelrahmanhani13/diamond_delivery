@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:vendor_dashboard/features/auth/domain/entities/auth_tokens.dart';
 
 class AuthTokens extends Equatable {
   final String accessToken;

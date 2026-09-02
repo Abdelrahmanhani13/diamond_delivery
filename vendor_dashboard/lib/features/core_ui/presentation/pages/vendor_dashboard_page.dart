@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vendor_dashboard/core/di/service_locator.dart';
 import 'package:vendor_dashboard/core/theme/vendor_colors.dart';
 import 'package:vendor_dashboard/core/theme/vendor_text_styles.dart';
+import 'package:vendor_dashboard/features/orders/presentation/controller/vendor_orders_cubit.dart';
+import 'package:vendor_dashboard/features/orders/presentation/pages/vendor_orders_list_page.dart';
 import 'package:vendor_dashboard/features/products/presentation/controller/vendor_products_cubit/vendor_products_cubit.dart';
 import 'package:vendor_dashboard/features/products/presentation/pages/vendor_products_list_page.dart';
 import 'package:vendor_dashboard/features/profile/presentation/controller/profile_cubit/vendor_profile_cubit.dart';
@@ -20,10 +22,7 @@ class _VendorDashboardPageState extends State<VendorDashboardPage> {
 
   final List<Widget> _pages = const [
     VendorProductsListPage(),
-
-    // TODO: Replace with VendorOrdersPage when orders feature is implemented.
-    Center(child: Text('الطلبات - قريباً')),
-
+    VendorOrdersListPage(),
     VendorProfilePage(),
   ];
 
@@ -34,7 +33,9 @@ class _VendorDashboardPageState extends State<VendorDashboardPage> {
         BlocProvider<VendorProductsCubit>(
           create: (_) => getIt<VendorProductsCubit>(),
         ),
-
+        BlocProvider<VendorOrdersCubit>(
+          create: (_) => getIt<VendorOrdersCubit>(),
+        ),
         BlocProvider<VendorProfileCubit>(
           create: (_) => getIt<VendorProfileCubit>(),
         ),
@@ -43,7 +44,6 @@ class _VendorDashboardPageState extends State<VendorDashboardPage> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           body: IndexedStack(index: _currentIndex, children: _pages),
-
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
               color: VendorColors.surface,
@@ -72,7 +72,6 @@ class _VendorDashboardPageState extends State<VendorDashboardPage> {
                         });
                       },
                     ),
-
                     _NavBarItem(
                       icon: Icons.receipt_long_outlined,
                       activeIcon: Icons.receipt_long_rounded,
@@ -84,7 +83,6 @@ class _VendorDashboardPageState extends State<VendorDashboardPage> {
                         });
                       },
                     ),
-
                     _NavBarItem(
                       icon: Icons.person_outline_rounded,
                       activeIcon: Icons.person_rounded,
@@ -144,10 +142,8 @@ class _NavBarItem extends StatelessWidget {
               color: isSelected ? VendorColors.primary : VendorColors.grey,
               size: 24,
             ),
-
             if (isSelected) ...[
               const SizedBox(width: 8),
-
               Text(
                 label,
                 style: VendorTextStyles.bodyMedium.copyWith(
