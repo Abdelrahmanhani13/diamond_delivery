@@ -7,6 +7,7 @@ import 'package:vendor_dashboard/features/products/presentation/controller/vendo
 import 'package:vendor_dashboard/features/products/presentation/controller/vendor_product_form_cubit/vendor_product_form_state.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 import '../../domain/entities/vendor_product.dart';
 import '../widgets/product_basic_info_section.dart';
 import '../widgets/product_image_gallery_section.dart';
@@ -202,133 +203,131 @@ class _VendorAddEditProductPageState extends State<VendorAddEditProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: VendorColors.scaffoldBackground,
-        appBar: AppBar(
-          backgroundColor: VendorColors.surface,
-          elevation: 0,
-          title: Text(
-            isEditing ? 'تعديل المنتج' : 'إضافة منتج جديد',
-            style: VendorTextStyles.headingMedium,
-          ),
+    return Scaffold(
+      backgroundColor: VendorColors.scaffoldBackground,
+      appBar: AppBar(
+        backgroundColor: VendorColors.surface,
+        elevation: 0,
+        title: Text(
+          isEditing ? context.tr('editProduct') : context.tr('addNewProduct'),
+          style: VendorTextStyles.headingMedium,
         ),
-        body: BlocConsumer<VendorProductFormCubit, VendorProductFormState>(
-          listener: (context, state) {
-            if (state is VendorProductFormError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: VendorColors.error,
-                ),
-              );
-            } else if (state is VendorProductFormSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    isEditing
-                        ? 'تم تحديث المنتج بنجاح'
-                        : 'تم إضافة المنتج بنجاح',
-                  ),
-                  backgroundColor: VendorColors.success,
-                ),
-              );
-              context.pop();
-            } else if (state is VendorProductImageUploaded) {
-              setState(() => _images = [..._images, state.image]);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('تم رفع الصورة بنجاح'),
-                  backgroundColor: VendorColors.success,
-                ),
-              );
-            } else if (state is VendorProductImageDeleted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('تم حذف الصورة بنجاح'),
-                  backgroundColor: VendorColors.success,
-                ),
-              );
-            } else if (state is VendorProductPrimaryImageSet) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('تم تعيين الصورة الرئيسية'),
-                  backgroundColor: VendorColors.success,
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            final isLoading = state is VendorProductFormSubmitting;
-
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ProductBasicInfoSection(
-                      subCategoryIdController: _subCategoryIdController,
-                      nameArabicController: _nameArabicController,
-                      nameEnglishController: _nameEnglishController,
-                      descriptionArabicController: _descriptionArabicController,
-                      descriptionEnglishController:
-                          _descriptionEnglishController,
-                      priceController: _priceController,
-                    ),
-                    const SizedBox(height: 16),
-                    ProductPricingInventorySection(
-                      discountPriceController: _discountPriceController,
-                      stockQuantityController: _stockQuantityController,
-                      skuController: _skuController,
-                      barcodeController: _barcodeController,
-                      weightController: _weightController,
-                    ),
-                    if (isEditing) ...[
-                      const SizedBox(height: 16),
-                      ProductImageGallerySection(
-                        images: _images,
-                        isUploading: state is VendorProductImageUploading,
-                        onAddImage: _onAddImage,
-                        onSetPrimary: _onSetPrimaryImage,
-                        onDeleteImage: _onDeleteImage,
-                      ),
-                    ],
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: isLoading ? null : _onSave,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: VendorColors.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: isLoading
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                isEditing ? 'حفظ التعديلات' : 'إضافة المنتج',
-                                style: VendorTextStyles.buttonLarge,
-                              ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
+      ),
+      body: BlocConsumer<VendorProductFormCubit, VendorProductFormState>(
+        listener: (context, state) {
+          if (state is VendorProductFormError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: VendorColors.error,
               ),
             );
-          },
-        ),
+          } else if (state is VendorProductFormSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  isEditing
+                      ? context.tr('productUpdatedSuccess')
+                      : context.tr('productAddedSuccess'),
+                ),
+                backgroundColor: VendorColors.success,
+              ),
+            );
+            context.pop();
+          } else if (state is VendorProductImageUploaded) {
+            setState(() => _images = [..._images, state.image]);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(context.tr('imageUploadedSuccess')),
+                backgroundColor: VendorColors.success,
+              ),
+            );
+          } else if (state is VendorProductImageDeleted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(context.tr('imageDeletedSuccess')),
+                backgroundColor: VendorColors.success,
+              ),
+            );
+          } else if (state is VendorProductPrimaryImageSet) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(context.tr('primarySetSuccess')),
+                backgroundColor: VendorColors.success,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          final isLoading = state is VendorProductFormSubmitting;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ProductBasicInfoSection(
+                    subCategoryIdController: _subCategoryIdController,
+                    nameArabicController: _nameArabicController,
+                    nameEnglishController: _nameEnglishController,
+                    descriptionArabicController: _descriptionArabicController,
+                    descriptionEnglishController: _descriptionEnglishController,
+                    priceController: _priceController,
+                  ),
+                  const SizedBox(height: 16),
+                  ProductPricingInventorySection(
+                    discountPriceController: _discountPriceController,
+                    stockQuantityController: _stockQuantityController,
+                    skuController: _skuController,
+                    barcodeController: _barcodeController,
+                    weightController: _weightController,
+                  ),
+                  if (isEditing) ...[
+                    const SizedBox(height: 16),
+                    ProductImageGallerySection(
+                      images: _images,
+                      isUploading: state is VendorProductImageUploading,
+                      onAddImage: _onAddImage,
+                      onSetPrimary: _onSetPrimaryImage,
+                      onDeleteImage: _onDeleteImage,
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: isLoading ? null : _onSave,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: VendorColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: isLoading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              isEditing
+                                  ? context.tr('saveChanges')
+                                  : context.tr('addNewProduct'),
+                              style: VendorTextStyles.buttonLarge,
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

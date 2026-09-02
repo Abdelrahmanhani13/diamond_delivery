@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 import '../../data/models/vendor_dashboard_stats_model.dart';
 
 class VendorDashboardStatsGrid extends StatelessWidget {
@@ -13,7 +14,7 @@ class VendorDashboardStatsGrid extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('إحصائيات المتجر', style: VendorTextStyles.headingSmall),
+        Text(context.tr('storeStats'), style: VendorTextStyles.headingSmall),
         const SizedBox(height: 12),
         GridView.count(
           crossAxisCount: 2,
@@ -24,25 +25,25 @@ class VendorDashboardStatsGrid extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           children: [
             _StatCard(
-              title: 'إجمالي المنتجات',
+              title: context.tr('totalProducts'),
               value: stats.totalProducts.toString(),
               icon: Icons.inventory_2_outlined,
               color: VendorColors.primary,
             ),
             _StatCard(
-              title: 'الطلبات الجديدة',
+              title: context.tr('newOrders'),
               value: stats.pendingOrders.toString(),
               icon: Icons.notifications_active_outlined,
               color: VendorColors.accent,
             ),
             _StatCard(
-              title: 'قيد التجهيز',
+              title: context.tr('preparingOrders'),
               value: stats.preparingOrders.toString(),
               icon: Icons.soup_kitchen_outlined,
               color: Colors.orange,
             ),
             _StatCard(
-              title: 'جاهزة للتسليم',
+              title: context.tr('readyOrders'),
               value: stats.readyOrders.toString(),
               icon: Icons.check_circle_outline,
               color: VendorColors.success,

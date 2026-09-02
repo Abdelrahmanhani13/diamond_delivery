@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 import '../../domain/entities/vendor_order.dart';
 
 class OrderDetailsHeaderCard extends StatelessWidget {
@@ -23,7 +24,7 @@ class OrderDetailsHeaderCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'طلب #${order.orderNumber}',
+                '${context.tr('orderNumber')} #${order.orderNumber}',
                 style: VendorTextStyles.titleMedium,
               ),
               _StatusChip(status: order.orderStatus),
@@ -31,7 +32,7 @@ class OrderDetailsHeaderCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'تاريخ الطلب: ${order.createdAtFormatted}',
+            '${context.tr('orderDate')}: ${order.createdAtFormatted}',
             style: VendorTextStyles.bodySmall,
           ),
         ],
@@ -56,29 +57,29 @@ class _StatusChip extends StatelessWidget {
       case 'pending':
         bg = VendorColors.accent.withValues(alpha: 0.15);
         fg = VendorColors.accent;
-        label = 'جديد';
+        label = context.tr('statusNew');
         break;
       case 'preparing':
         bg = Colors.orange.withValues(alpha: 0.15);
         fg = Colors.orange;
-        label = 'قيد التجهيز';
+        label = context.tr('statusPreparing');
         break;
       case 'ready':
         bg = VendorColors.primary.withValues(alpha: 0.15);
         fg = VendorColors.primary;
-        label = 'جاهز';
+        label = context.tr('statusReady');
         break;
       case 'delivered':
       case 'completed':
         bg = VendorColors.success.withValues(alpha: 0.15);
         fg = VendorColors.success;
-        label = 'مكتمل';
+        label = context.tr('statusCompleted');
         break;
       case 'rejected':
       case 'cancelled':
         bg = VendorColors.error.withValues(alpha: 0.15);
         fg = VendorColors.error;
-        label = 'ملغى';
+        label = context.tr('statusCancelled');
         break;
       default:
         bg = VendorColors.greyLight;

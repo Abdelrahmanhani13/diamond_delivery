@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 import '../../domain/entities/vendor_order.dart';
 
 class OrderCustomerInfoCard extends StatelessWidget {
@@ -19,7 +20,7 @@ class OrderCustomerInfoCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('معلومات العميل', style: VendorTextStyles.titleMedium),
+          Text(context.tr('customerInfo'), style: VendorTextStyles.titleMedium),
           const SizedBox(height: 12),
           if (order.customerName.isNotEmpty)
             Padding(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 
 class ProductPricingInventorySection extends StatelessWidget {
   final TextEditingController discountPriceController;
@@ -36,47 +37,50 @@ class ProductPricingInventorySection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('تفاصيل إضافية (اختياري)', style: VendorTextStyles.headingSmall),
+          Text(
+            context.tr('financialsSection'),
+            style: VendorTextStyles.headingSmall,
+          ),
           const SizedBox(height: 16),
           TextFormField(
             controller: discountPriceController,
-            decoration: const InputDecoration(
-              labelText: 'سعر الخصم',
-              prefixIcon: Icon(Icons.discount_outlined),
+            decoration: InputDecoration(
+              labelText: context.tr('discountPrice'),
+              prefixIcon: const Icon(Icons.discount_outlined),
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: stockQuantityController,
-            decoration: const InputDecoration(
-              labelText: 'الكمية المتاحة',
-              prefixIcon: Icon(Icons.inventory_2_outlined),
+            decoration: InputDecoration(
+              labelText: context.tr('stockQuantity'),
+              prefixIcon: const Icon(Icons.inventory_2_outlined),
             ),
             keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: skuController,
-            decoration: const InputDecoration(
-              labelText: 'SKU',
-              prefixIcon: Icon(Icons.qr_code_outlined),
+            decoration: InputDecoration(
+              labelText: context.tr('sku'),
+              prefixIcon: const Icon(Icons.qr_code_outlined),
             ),
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: barcodeController,
-            decoration: const InputDecoration(
-              labelText: 'الباركود',
-              prefixIcon: Icon(Icons.barcode_reader),
+            decoration: InputDecoration(
+              labelText: context.tr('barcode'),
+              prefixIcon: const Icon(Icons.barcode_reader),
             ),
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: weightController,
-            decoration: const InputDecoration(
-              labelText: 'الوزن',
-              prefixIcon: Icon(Icons.scale_outlined),
+            decoration: InputDecoration(
+              labelText: context.tr('weight'),
+              prefixIcon: const Icon(Icons.scale_outlined),
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),

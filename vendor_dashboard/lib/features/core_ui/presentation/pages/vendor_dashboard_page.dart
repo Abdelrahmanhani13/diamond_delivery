@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vendor_dashboard/core/di/service_locator.dart';
 import 'package:vendor_dashboard/core/theme/vendor_colors.dart';
 import 'package:vendor_dashboard/core/theme/vendor_text_styles.dart';
+import 'package:vendor_dashboard/core/utils/localized_entity_extension.dart';
 import 'package:vendor_dashboard/features/orders/presentation/controller/vendor_orders_cubit.dart';
 import 'package:vendor_dashboard/features/orders/presentation/pages/vendor_orders_list_page.dart';
 import 'package:vendor_dashboard/features/products/presentation/controller/vendor_products_cubit/vendor_products_cubit.dart';
@@ -40,62 +41,59 @@ class _VendorDashboardPageState extends State<VendorDashboardPage> {
           create: (_) => getIt<VendorProfileCubit>(),
         ),
       ],
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          body: IndexedStack(index: _currentIndex, children: _pages),
-          bottomNavigationBar: Container(
-            decoration: BoxDecoration(
-              color: VendorColors.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: VendorColors.shadow,
-                  blurRadius: 20,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _NavBarItem(
-                      icon: Icons.inventory_2_outlined,
-                      activeIcon: Icons.inventory_2_rounded,
-                      label: 'منتجاتي',
-                      isSelected: _currentIndex == 0,
-                      onTap: () {
-                        setState(() {
-                          _currentIndex = 0;
-                        });
-                      },
-                    ),
-                    _NavBarItem(
-                      icon: Icons.receipt_long_outlined,
-                      activeIcon: Icons.receipt_long_rounded,
-                      label: 'الطلبات',
-                      isSelected: _currentIndex == 1,
-                      onTap: () {
-                        setState(() {
-                          _currentIndex = 1;
-                        });
-                      },
-                    ),
-                    _NavBarItem(
-                      icon: Icons.person_outline_rounded,
-                      activeIcon: Icons.person_rounded,
-                      label: 'حسابي',
-                      isSelected: _currentIndex == 2,
-                      onTap: () {
-                        setState(() {
-                          _currentIndex = 2;
-                        });
-                      },
-                    ),
-                  ],
-                ),
+      child: Scaffold(
+        body: IndexedStack(index: _currentIndex, children: _pages),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: VendorColors.surface,
+            boxShadow: [
+              BoxShadow(
+                color: VendorColors.shadow,
+                blurRadius: 20,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _NavBarItem(
+                    icon: Icons.inventory_2_outlined,
+                    activeIcon: Icons.inventory_2_rounded,
+                    label: context.tr('products'),
+                    isSelected: _currentIndex == 0,
+                    onTap: () {
+                      setState(() {
+                        _currentIndex = 0;
+                      });
+                    },
+                  ),
+                  _NavBarItem(
+                    icon: Icons.receipt_long_outlined,
+                    activeIcon: Icons.receipt_long_rounded,
+                    label: context.tr('orders'),
+                    isSelected: _currentIndex == 1,
+                    onTap: () {
+                      setState(() {
+                        _currentIndex = 1;
+                      });
+                    },
+                  ),
+                  _NavBarItem(
+                    icon: Icons.person_outline_rounded,
+                    activeIcon: Icons.person_rounded,
+                    label: context.tr('profile'),
+                    isSelected: _currentIndex == 2,
+                    onTap: () {
+                      setState(() {
+                        _currentIndex = 2;
+                      });
+                    },
+                  ),
+                ],
               ),
             ),
           ),

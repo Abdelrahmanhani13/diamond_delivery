@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 import '../../domain/entities/vendor_profile.dart';
 
 class VendorProfileHeader extends StatelessWidget {
@@ -34,6 +35,16 @@ class VendorProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final picker = ImagePicker();
+
+    final primaryName = context.isArabic
+        ? profile.nameArabic
+        : (profile.nameEnglish.isNotEmpty
+              ? profile.nameEnglish
+              : profile.nameArabic);
+
+    final secondaryName = context.isArabic
+        ? profile.nameEnglish
+        : profile.nameArabic;
 
     return Column(
       children: [
@@ -147,13 +158,11 @@ class VendorProfileHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      profile.nameArabic,
-                      style: VendorTextStyles.headingLarge,
-                    ),
-                    if (profile.nameEnglish.isNotEmpty)
+                    Text(primaryName, style: VendorTextStyles.headingLarge),
+                    if (secondaryName.isNotEmpty &&
+                        secondaryName != primaryName)
                       Text(
-                        profile.nameEnglish,
+                        secondaryName,
                         style: VendorTextStyles.bodyMedium.copyWith(
                           color: VendorColors.textSecondary,
                         ),
@@ -166,7 +175,9 @@ class VendorProfileHeader extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        profile.isOpen ? 'المتجر مفتوح' : 'المتجر مغلق',
+                        profile.isOpen
+                            ? context.tr('storeIsOpen')
+                            : context.tr('storeIsClosed'),
                         style: VendorTextStyles.bodyMedium.copyWith(
                           fontWeight: FontWeight.bold,
                           color: profile.isOpen

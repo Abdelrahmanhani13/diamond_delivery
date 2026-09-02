@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vendor_dashboard/core/services/snackbar_service.dart';
 import 'package:vendor_dashboard/core/theme/vendor_colors.dart';
 import 'package:vendor_dashboard/core/theme/vendor_text_styles.dart';
+import 'package:vendor_dashboard/core/utils/localized_entity_extension.dart';
 import '../../domain/entities/vendor_order.dart';
 import '../controller/vendor_orders_cubit.dart';
 import '../controller/vendor_orders_state.dart';
@@ -31,57 +32,54 @@ class _VendorOrderDetailsPageState extends State<VendorOrderDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: VendorColors.background,
-        appBar: AppBar(
-          title: Text(
-            'تفاصيل الطلب #${_currentOrder.orderNumber}',
-            style: VendorTextStyles.titleLarge,
-          ),
-          elevation: 0,
-          backgroundColor: VendorColors.surface,
+    return Scaffold(
+      backgroundColor: VendorColors.background,
+      appBar: AppBar(
+        title: Text(
+          '${context.tr('orderDetails')} #${_currentOrder.orderNumber}',
+          style: VendorTextStyles.titleLarge,
         ),
-        body: BlocListener<VendorOrdersCubit, VendorOrdersState>(
-          listener: (context, state) {
-            if (state is VendorOrdersLoaded) {
-              if (state.actionSuccessMessage != null) {
-                SnackbarService.showSuccess(state.actionSuccessMessage!);
-              }
-              if (state.actionError != null) {
-                SnackbarService.showError(state.actionError!);
-              }
-              final updated = state.orders.firstWhere(
-                (o) => o.id == _currentOrder.id,
-                orElse: () => _currentOrder,
-              );
-              setState(() {
-                _currentOrder = updated;
-              });
+        elevation: 0,
+        backgroundColor: VendorColors.surface,
+      ),
+      body: BlocListener<VendorOrdersCubit, VendorOrdersState>(
+        listener: (context, state) {
+          if (state is VendorOrdersLoaded) {
+            if (state.actionSuccessMessage != null) {
+              SnackbarService.showSuccess(state.actionSuccessMessage!);
             }
-          },
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                OrderDetailsHeaderCard(order: _currentOrder),
+            if (state.actionError != null) {
+              SnackbarService.showError(state.actionError!);
+            }
+            final updated = state.orders.firstWhere(
+              (o) => o.id == _currentOrder.id,
+              orElse: () => _currentOrder,
+            );
+            setState(() {
+              _currentOrder = updated;
+            });
+          }
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              OrderDetailsHeaderCard(order: _currentOrder),
+              const SizedBox(height: 16),
+              OrderCustomerInfoCard(order: _currentOrder),
+              const SizedBox(height: 16),
+              if (_currentOrder.address != null) ...[
+                _buildAddressCard(),
                 const SizedBox(height: 16),
-                OrderCustomerInfoCard(order: _currentOrder),
-                const SizedBox(height: 16),
-                if (_currentOrder.address != null) ...[
-                  _buildAddressCard(),
-                  const SizedBox(height: 16),
-                ],
-                _buildItemsList(),
-                const SizedBox(height: 16),
-                OrderSummaryCard(order: _currentOrder),
-                const SizedBox(height: 24),
-                _buildActionButtons(context),
-                const SizedBox(height: 32),
               ],
-            ),
+              _buildItemsList(),
+              const SizedBox(height: 16),
+              OrderSummaryCard(order: _currentOrder),
+              const SizedBox(height: 24),
+              _buildActionButtons(context),
+              const SizedBox(height: 32),
+            ],
           ),
         ),
       ),
@@ -99,7 +97,10 @@ class _VendorOrderDetailsPageState extends State<VendorOrderDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('عنوان التوصيل', style: VendorTextStyles.titleMedium),
+          Text(
+            context.tr('deliveryAddress'),
+            style: VendorTextStyles.titleMedium,
+          ),
           const SizedBox(height: 12),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,7 +135,7 @@ class _VendorOrderDetailsPageState extends State<VendorOrderDetailsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'عناصر الطلب (${_currentOrder.items.length})',
+            '${context.tr('orderItems')} (${_currentOrder.items.length})',
             style: VendorTextStyles.titleMedium,
           ),
           const SizedBox(height: 12),
@@ -165,21 +166,21 @@ class _VendorOrderDetailsPageState extends State<VendorOrderDetailsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item.productNameArabic,
+                          item.productName,
                           style: VendorTextStyles.bodyMedium.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${item.unitPrice.toStringAsFixed(2)} د.أ × ${item.quantity}',
+                          '${item.unitPrice.toStringAsFixed(2)} JOD × ${item.quantity}',
                           style: VendorTextStyles.bodySmall,
                         ),
                       ],
                     ),
                   ),
                   Text(
-                    '${item.totalPrice.toStringAsFixed(2)} د.أ',
+                    '${item.totalPrice.toStringAsFixed(2)} JOD',
                     style: VendorTextStyles.bodyMedium.copyWith(
                       fontWeight: FontWeight.bold,
                       color: VendorColors.primary,
@@ -224,9 +225,9 @@ class _VendorOrderDetailsPageState extends State<VendorOrderDetailsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'قبول الطلب',
-                style: TextStyle(
+              child: Text(
+                context.tr('acceptOrder'),
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
@@ -252,9 +253,9 @@ class _VendorOrderDetailsPageState extends State<VendorOrderDetailsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'رفض الطلب',
-                style: TextStyle(
+              child: Text(
+                context.tr('rejectOrder'),
+                style: const TextStyle(
                   color: VendorColors.error,
                   fontWeight: FontWeight.bold,
                 ),
@@ -278,9 +279,12 @@ class _VendorOrderDetailsPageState extends State<VendorOrderDetailsPage> {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: const Text(
-            'تحديد كجاهز للتسليم',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          child: Text(
+            context.tr('markAsReady'),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       );

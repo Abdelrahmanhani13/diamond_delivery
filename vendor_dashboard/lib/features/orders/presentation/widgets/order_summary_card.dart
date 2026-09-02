@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 import '../../domain/entities/vendor_order.dart';
 
 class OrderSummaryCard extends StatelessWidget {
@@ -19,14 +20,17 @@ class OrderSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('ملخص الحساب', style: VendorTextStyles.titleMedium),
+          Text(
+            context.tr('financialsSection'),
+            style: VendorTextStyles.titleMedium,
+          ),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('المجموع الفرعي', style: VendorTextStyles.bodyMedium),
+              Text(context.tr('subtotal'), style: VendorTextStyles.bodyMedium),
               Text(
-                '${order.subTotal.toStringAsFixed(2)} د.أ',
+                '${order.subTotal.toStringAsFixed(2)} JOD',
                 style: VendorTextStyles.bodyMedium,
               ),
             ],
@@ -35,9 +39,12 @@ class OrderSummaryCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('رسوم التوصيل', style: VendorTextStyles.bodyMedium),
               Text(
-                '${order.deliveryFee.toStringAsFixed(2)} د.أ',
+                context.tr('deliveryFee'),
+                style: VendorTextStyles.bodyMedium,
+              ),
+              Text(
+                '${order.deliveryFee.toStringAsFixed(2)} JOD',
                 style: VendorTextStyles.bodyMedium,
               ),
             ],
@@ -47,13 +54,13 @@ class OrderSummaryCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'المجموع الكلي',
+                context.tr('grandTotal'),
                 style: VendorTextStyles.titleMedium.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
-                '${order.totalAmount.toStringAsFixed(2)} د.أ',
+                '${order.totalAmount.toStringAsFixed(2)} JOD',
                 style: VendorTextStyles.titleLarge.copyWith(
                   color: VendorColors.primary,
                   fontWeight: FontWeight.bold,

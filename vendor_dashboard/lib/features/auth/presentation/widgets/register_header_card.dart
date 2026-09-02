@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 
 class RegisterHeaderCard extends StatelessWidget {
   const RegisterHeaderCard({super.key});
@@ -22,14 +23,14 @@ class RegisterHeaderCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'أنشئ متجرك الآن',
+            context.tr('createStoreHeader'),
             style: VendorTextStyles.headingMedium.copyWith(
               color: VendorColors.primary,
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            'أدخل بيانات المتجر وموقعه للبدء في البيع',
+            context.tr('registerSubtitle'),
             style: VendorTextStyles.bodySmall.copyWith(
               color: VendorColors.primaryDark,
             ),

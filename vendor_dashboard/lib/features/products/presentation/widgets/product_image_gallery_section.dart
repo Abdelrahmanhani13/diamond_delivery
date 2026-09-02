@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 import '../../domain/entities/vendor_product.dart';
 
 class ProductImageGallerySection extends StatelessWidget {
@@ -40,11 +41,14 @@ class ProductImageGallerySection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('صور المنتج', style: VendorTextStyles.headingSmall),
+              Text(
+                context.tr('productImages'),
+                style: VendorTextStyles.headingSmall,
+              ),
               OutlinedButton.icon(
                 onPressed: isUploading ? null : onAddImage,
                 icon: const Icon(Icons.add_photo_alternate_outlined, size: 18),
-                label: const Text('إضافة صورة'),
+                label: Text(context.tr('uploadImage')),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -83,7 +87,10 @@ class ProductImageGallerySection extends StatelessWidget {
                       color: VendorColors.grey,
                     ),
                     const SizedBox(height: 8),
-                    Text('لا توجد صور', style: VendorTextStyles.bodySmall),
+                    Text(
+                      context.tr('productImages'),
+                      style: VendorTextStyles.bodySmall,
+                    ),
                   ],
                 ),
               ),
@@ -128,7 +135,7 @@ class ProductImageGallerySection extends StatelessWidget {
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
-                              'رئيسية',
+                              context.tr('primaryImage'),
                               style: VendorTextStyles.caption.copyWith(
                                 color: VendorColors.white,
                                 fontWeight: FontWeight.w600,

@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:vendor_dashboard/core/api/api_client.dart';
 import 'package:vendor_dashboard/core/api/api_factory.dart';
 import 'package:vendor_dashboard/core/cache/secure_storage_service.dart';
+import 'package:vendor_dashboard/core/localization/language_cubit.dart';
 import 'package:vendor_dashboard/core/network/auth_event_bus.dart';
 import 'package:vendor_dashboard/core/network/network_info.dart';
 import 'package:vendor_dashboard/core/network/nominatim_client.dart';
@@ -33,6 +34,7 @@ import 'package:vendor_dashboard/features/auth/presentation/controller/login_cub
 import 'package:vendor_dashboard/features/auth/presentation/controller/otp_cubit/vendor_otp_cubit.dart';
 import 'package:vendor_dashboard/features/auth/presentation/controller/register_cubit/vendor_register_cubit.dart';
 import 'package:vendor_dashboard/features/auth/presentation/controller/reset_password_cubit/vendor_reset_password_cubit.dart';
+import 'package:vendor_dashboard/features/auth/presentation/controller/vendor_categories_cubit/vendor_categories_cubit.dart';
 
 // Products
 import 'package:vendor_dashboard/features/products/data/datasources/vendor_products_remote_data_source.dart';
@@ -100,6 +102,12 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<Dio>(() => getIt<DioFactory>().createDio());
 
   getIt.registerLazySingleton<ApiClient>(() => ApiClient(getIt<Dio>()));
+
+  getIt.registerLazySingleton<LanguageCubit>(
+    () =>
+        LanguageCubit(secureStorage: getIt<FlutterSecureStorage>())
+          ..initLanguage(),
+  );
 
   // ==========================================
   // 2. Data Sources
@@ -268,6 +276,12 @@ Future<void> setupServiceLocator() async {
 
   getIt.registerFactory<VendorRegisterCubit>(
     () => VendorRegisterCubit(registerUseCase: getIt<VendorRegisterUseCase>()),
+  );
+
+  getIt.registerFactory<VendorCategoriesCubit>(
+    () => VendorCategoriesCubit(
+      getVendorCategoriesUseCase: getIt<GetVendorCategoriesUseCase>(),
+    ),
   );
 
   getIt.registerFactory<VendorResetPasswordCubit>(

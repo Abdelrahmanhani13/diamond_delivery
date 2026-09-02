@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 
 class RegisterLocationPickerTile extends StatelessWidget {
   final double? latitude;
@@ -22,7 +23,7 @@ class RegisterLocationPickerTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'موقع المتجر',
+          context.tr('locationSection'),
           style: VendorTextStyles.bodyMedium.copyWith(
             fontWeight: FontWeight.w700,
           ),
@@ -49,10 +50,10 @@ class RegisterLocationPickerTile extends StatelessWidget {
                 Expanded(
                   child: Text(
                     latitude == null
-                        ? 'اضغط لتحديد موقع المتجر على الخريطة'
+                        ? context.tr('pickLocationOnMap')
                         : (addressText.isNotEmpty
                               ? addressText
-                              : 'تم تحديد الموقع'),
+                              : context.tr('locationSelected')),
                     style: VendorTextStyles.bodyMedium,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

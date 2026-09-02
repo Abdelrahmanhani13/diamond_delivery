@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 import '../../domain/entities/vendor_profile.dart';
 
 class VendorProfileInfoSection extends StatelessWidget {
@@ -26,42 +27,45 @@ class VendorProfileInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('بيانات التواصل والمتجر', style: VendorTextStyles.headingSmall),
+          Text(
+            context.tr('contactAndStoreInfo'),
+            style: VendorTextStyles.headingSmall,
+          ),
           const SizedBox(height: 16),
           if (profile.phoneNumber.isNotEmpty)
             _InfoTile(
               icon: Icons.phone_outlined,
-              title: 'رقم الهاتف',
+              title: context.tr('phoneNumber'),
               value: profile.phoneNumber,
             ),
           if (profile.whatsappNumber != null &&
               profile.whatsappNumber!.isNotEmpty)
             _InfoTile(
               icon: Icons.chat_bubble_outline_rounded,
-              title: 'رقم الواتساب',
+              title: context.tr('whatsappNumber'),
               value: profile.whatsappNumber!,
             ),
           if (profile.email.isNotEmpty)
             _InfoTile(
               icon: Icons.email_outlined,
-              title: 'البريد الإلكتروني',
+              title: context.tr('emailAddress'),
               value: profile.email,
             ),
           if (profile.addressText.isNotEmpty)
             _InfoTile(
               icon: Icons.location_on_outlined,
-              title: 'العنوان',
+              title: context.tr('displayAddress'),
               value: profile.addressText,
             ),
           _InfoTile(
             icon: Icons.local_shipping_outlined,
-            title: 'رسوم التوصيل',
-            value: '${profile.deliveryFee.toStringAsFixed(2)} د.أ',
+            title: context.tr('deliveryFee'),
+            value: '${profile.deliveryFee.toStringAsFixed(2)} JOD',
           ),
           _InfoTile(
             icon: Icons.shopping_bag_outlined,
-            title: 'الحد الأدنى للطلب',
-            value: '${profile.minimumOrder.toStringAsFixed(2)} د.أ',
+            title: context.tr('minimumOrder'),
+            value: '${profile.minimumOrder.toStringAsFixed(2)} JOD',
           ),
         ],
       ),

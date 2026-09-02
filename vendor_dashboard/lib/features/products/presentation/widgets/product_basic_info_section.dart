@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/vendor_colors.dart';
 import '../../../../core/theme/vendor_text_styles.dart';
+import '../../../../core/utils/localized_entity_extension.dart';
 
 class ProductBasicInfoSection extends StatelessWidget {
   final TextEditingController subCategoryIdController;
@@ -38,73 +39,77 @@ class ProductBasicInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('معلومات المنتج الأساسية', style: VendorTextStyles.headingSmall),
+          Text(
+            context.tr('businessInfoSection'),
+            style: VendorTextStyles.headingSmall,
+          ),
           const SizedBox(height: 16),
           TextFormField(
             controller: subCategoryIdController,
             decoration: const InputDecoration(
-              labelText: 'رقم القسم الفرعي (subCategoryId)',
+              labelText: 'SubCategory ID (GUID)',
               prefixIcon: Icon(Icons.category_outlined),
-              helperText: 'مؤقتًا: الصق الـ GUID لحد ما نعمل قايمة اختيار',
             ),
             validator: (v) => v == null || v.trim().isEmpty
-                ? 'يرجى إدخال رقم القسم الفرعي'
+                ? context.tr('fieldRequired')
                 : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: nameArabicController,
-            decoration: const InputDecoration(
-              labelText: 'اسم المنتج (عربي)',
-              prefixIcon: Icon(Icons.diamond_outlined),
+            decoration: InputDecoration(
+              labelText: '${context.tr('productName')} (العربية)',
+              prefixIcon: const Icon(Icons.diamond_outlined),
             ),
             validator: (v) => v == null || v.trim().isEmpty
-                ? 'يرجى إدخال اسم المنتج بالعربي'
+                ? context.tr('fieldRequired')
                 : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: nameEnglishController,
-            decoration: const InputDecoration(
-              labelText: 'اسم المنتج (إنجليزي)',
-              prefixIcon: Icon(Icons.diamond_outlined),
+            textDirection: TextDirection.ltr,
+            decoration: InputDecoration(
+              labelText: '${context.tr('productName')} (English)',
+              prefixIcon: const Icon(Icons.diamond_outlined),
             ),
             validator: (v) => v == null || v.trim().isEmpty
-                ? 'يرجى إدخال اسم المنتج بالإنجليزي'
+                ? context.tr('fieldRequired')
                 : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: descriptionArabicController,
-            decoration: const InputDecoration(
-              labelText: 'وصف المنتج (عربي)',
-              prefixIcon: Icon(Icons.description_outlined),
+            decoration: InputDecoration(
+              labelText: '${context.tr('storeDescription')} (العربية)',
+              prefixIcon: const Icon(Icons.description_outlined),
             ),
             maxLines: 3,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: descriptionEnglishController,
-            decoration: const InputDecoration(
-              labelText: 'وصف المنتج (إنجليزي)',
-              prefixIcon: Icon(Icons.description_outlined),
+            textDirection: TextDirection.ltr,
+            decoration: InputDecoration(
+              labelText: '${context.tr('storeDescription')} (English)',
+              prefixIcon: const Icon(Icons.description_outlined),
             ),
             maxLines: 3,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: priceController,
-            decoration: const InputDecoration(
-              labelText: 'السعر',
-              prefixIcon: Icon(Icons.attach_money_rounded),
+            decoration: InputDecoration(
+              labelText: context.tr('productPrice'),
+              prefixIcon: const Icon(Icons.attach_money_rounded),
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             validator: (v) {
               if (v == null || v.trim().isEmpty) {
-                return 'يرجى إدخال السعر';
+                return context.tr('fieldRequired');
               }
               if (double.tryParse(v.trim()) == null) {
-                return 'يرجى إدخال رقم صحيح';
+                return context.tr('invalidNumber');
               }
               return null;
             },
